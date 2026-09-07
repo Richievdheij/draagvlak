@@ -1,0 +1,19 @@
+{
+  "name": "draagvlak",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Front-end tooling for the Draagvlak 2038 prototype. There is no bundler: the browser loads the ES modules directly.",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "format": "prettier --write \"public/assets/**/*.{js,css}\" \"**/*.md\"",
+    "format:check": "prettier --check \"public/assets/**/*.{js,css}\" \"**/*.md\"",
+    "lint": "eslint public/assets/js"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "prettier": "^3.0.0"
+  }
+}

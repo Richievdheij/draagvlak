@@ -1,0 +1,14 @@
+# Dependencies, installed with composer install and npm install.
+/vendor/
+/node_modules/
+
+# Editor and operating system leftovers.
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Local overrides and logs.
+.env
+.env.local
+*.log

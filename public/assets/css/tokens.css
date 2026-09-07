@@ -1,0 +1,177 @@
+/*
+ * Design tokens.
+ *
+ * The only file that holds a colour, a size, a font or a radius. A literal hex
+ * code or pixel value anywhere else is a bug: change a value here and the whole
+ * site follows.
+ *
+ * Three layers, and you almost always want the middle one:
+ *
+ *   1. Primitives  --paper-100, --civic-700. The raw palette. Never used in a
+ *      component, only to build the layer below.
+ *   2. Semantic    --color-surface, --color-text. What a thing is for. This is
+ *      what you write in base.css, components.css and screens.css.
+ *   3. Component   set inside a component itself, for example --btn-background.
+ *
+ * Light and dark come from light-dark(): the first value is light, the second
+ * is dark, and the browser picks one based on color-scheme below. That is why
+ * there is no second copy of the palette.
+ */
+
+:root {
+    /* ---- 1. Primitives: paper and ink -------------------------------- */
+    --paper-0: #ffffff;
+    --paper-50: #faf9f6;
+    --paper-100: #f1f1ec;
+    --paper-200: #e6e6df;
+    --paper-300: #d5d8d2;
+
+    --ink-900: #0c161b;
+    --ink-800: #17262e;
+    --ink-600: #3d525c;
+    --ink-500: #5c6f78;
+    --ink-400: #8d9ba1;
+
+    /* Dark surfaces and the text that sits on them. */
+    --night-900: #0b1418;
+    --night-800: #101d23;
+    --night-700: #17282f;
+    --night-600: #22353f;
+    --mist-100: #eef3f5;
+    --mist-300: #a9bcc4;
+
+    /* ---- 1. Primitives: the institution ------------------------------ */
+    /* Petrol is the colour of the system itself: header, buttons, links.
+       Red and green mean loss and gain, and nothing else. */
+    --civic-900: #0d2731;
+    --civic-800: #163b48;
+    --civic-700: #1f4e5f;
+    --civic-400: #56a2b8;
+    --civic-300: #8cc4d5;
+    --civic-100: #e2ebed;
+    --civic-shade: #14313c;
+
+    --alarm-600: #a62b1f;
+    --alarm-400: #e2796c;
+    --alarm-100: #f8e9e7;
+    --alarm-shade: #3a1a16;
+
+    --gain-600: #2c6b4f;
+    --gain-400: #6fb894;
+    --gain-100: #e6efe9;
+    --gain-shade: #14301f;
+
+    --focus-500: #0f7f9b;
+    --focus-300: #6cc9df;
+
+    /* ---- 2. Semantic: colour ----------------------------------------- */
+    color-scheme: light dark;
+
+    --color-background: light-dark(var(--paper-50), var(--night-900));
+    --color-surface: light-dark(var(--paper-0), var(--night-800));
+    --color-surface-sunken: light-dark(var(--paper-100), var(--night-700));
+
+    --color-text: light-dark(var(--ink-800), var(--mist-100));
+    --color-text-muted: light-dark(var(--ink-500), var(--mist-300));
+    --color-text-inverse: light-dark(var(--paper-0), var(--ink-900));
+
+    --color-border: light-dark(var(--paper-300), var(--night-600));
+    --color-border-strong: light-dark(var(--ink-400), var(--civic-800));
+
+    --color-accent: light-dark(var(--civic-700), var(--civic-300));
+    --color-accent-hover: light-dark(var(--civic-800), var(--civic-400));
+    --color-accent-soft: light-dark(var(--civic-100), var(--civic-shade));
+    --color-on-accent: light-dark(var(--paper-0), var(--civic-900));
+
+    --color-danger: light-dark(var(--alarm-600), var(--alarm-400));
+    --color-danger-soft: light-dark(var(--alarm-100), var(--alarm-shade));
+    --color-success: light-dark(var(--gain-600), var(--gain-400));
+    --color-success-soft: light-dark(var(--gain-100), var(--gain-shade));
+
+    --color-focus: light-dark(var(--focus-500), var(--focus-300));
+
+    /* ---- 2. Semantic: type ------------------------------------------- */
+    /* Outfit says the name of a thing: headings, the brand, numbers that are
+       meant to land. Inter is everything you read as a sentence. */
+    --font-display: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+    --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    --font-mono: ui-monospace, 'SFMono-Regular', 'Consolas', monospace;
+
+    /* The three largest sizes grow with the viewport, so a heading does not
+       need a media query to stop shouting on a phone. */
+    --text-3xl: clamp(2.25rem, 1.7rem + 2.4vw, 3.25rem);
+    --text-2xl: clamp(1.75rem, 1.45rem + 1.3vw, 2.25rem);
+    --text-xl: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+    --text-lg: 1.125rem;
+    --text-md: 1rem;
+    --text-sm: 0.875rem;
+    --text-xs: 0.75rem;
+
+    --leading-tight: 1.15;
+    --leading-snug: 1.35;
+    --leading-normal: 1.6;
+
+    --tracking-tight: -0.02em;
+    --tracking-wide: 0.08em;
+
+    --weight-regular: 400;
+    --weight-medium: 500;
+    --weight-semibold: 600;
+    --weight-bold: 700;
+
+    /* ---- 2. Semantic: space ------------------------------------------ */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 3rem;
+    --space-8: 4rem;
+    --space-9: 6rem;
+
+    /* ---- 2. Semantic: shape ------------------------------------------ */
+    /* Almost square on purpose: this should read as a form, not as a consumer
+       app. No shadows anywhere; depth comes from a hairline. */
+    --radius-xs: 2px;
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 14px;
+    --radius-pill: 999px;
+
+    --border-hairline: 1px solid var(--color-border);
+    --border-strong: 1px solid var(--color-border-strong);
+
+    /* ---- 2. Semantic: layout ----------------------------------------- */
+    /* Mobile first: the gutter grows with the screen, the content stops at a
+       readable width instead of stretching across a monitor. */
+    --width-page: 72rem;
+    --width-narrow: 38rem;
+    --width-prose: 62ch;
+    --gutter: clamp(1rem, 4vw, 2rem);
+    --header-height: 4rem;
+
+    /* ---- 2. Semantic: motion ----------------------------------------- */
+    --transition-fast: 120ms ease-out;
+    --transition-slow: 400ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+/*
+ * The theme switch. Without an attribute the browser decides, which is what
+ * most people want; the toggle in the header writes one of these instead.
+ */
+[data-theme='light'] {
+    color-scheme: light;
+}
+
+[data-theme='dark'] {
+    color-scheme: dark;
+}
+
+/* Motion off is an accessibility requirement, not a nicety. */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --transition-fast: 0ms;
+        --transition-slow: 0ms;
+    }
+}

@@ -1,0 +1,7 @@
+# Everyone works on a different operating system. Line endings are normalised
+# in the repository, so a Windows checkout never shows a file as fully changed.
+* text=auto eol=lf
+
+*.woff2 binary
+*.png binary
+*.jpg binary

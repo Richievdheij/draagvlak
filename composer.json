@@ -1,0 +1,22 @@
+{
+    "name": "richievdheij/draagvlak",
+    "description": "Draagvlak 2038 - speculative design prototype for the CMGT future scenario about social scoring.",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.4",
+        "ext-mbstring": "*"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "scripts": {
+        "start": "php -S localhost:8000 -t public",
+        "lint": "find bootstrap.php public src views -name '*.php' -print0 | xargs -0 -n1 php -l"
+    },
+    "scripts-descriptions": {
+        "start": "Start the local development server on http://localhost:8000",
+        "lint": "Check every PHP file for syntax errors"
+    }
+}

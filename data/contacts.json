@@ -1,0 +1,52 @@
+[
+  {
+    "id": "sanne",
+    "name": "Sanne de Wit",
+    "relation": "Beste vriendin",
+    "responseMinutes": 120,
+    "score": 81,
+    "isEmergencyContact": true,
+    "listsYou": true,
+    "note": "Reageert bijna altijd binnen een paar uur."
+  },
+  {
+    "id": "joep",
+    "name": "Joep Bakker",
+    "relation": "Oud-huisgenoot",
+    "responseMinutes": 4320,
+    "score": 64,
+    "isEmergencyContact": true,
+    "listsYou": true,
+    "note": "Werkt nachtdiensten en kijkt zelden op zijn telefoon."
+  },
+  {
+    "id": "farah",
+    "name": "Farah Yildiz",
+    "relation": "Zus",
+    "responseMinutes": 40320,
+    "score": 38,
+    "isEmergencyContact": false,
+    "listsYou": false,
+    "note": "Zorgt sinds april voor haar vader en reageert daardoor traag."
+  },
+  {
+    "id": "dean",
+    "name": "Dean Kolk",
+    "relation": "Stagegenoot",
+    "responseMinutes": 15,
+    "score": 88,
+    "isEmergencyContact": false,
+    "listsYou": true,
+    "note": "Antwoordt binnen enkele minuten, elke dag."
+  },
+  {
+    "id": "melissa",
+    "name": "Melissa Aarts",
+    "relation": "Vriendin uit je oude stad",
+    "responseMinutes": 2880,
+    "score": 72,
+    "isEmergencyContact": false,
+    "listsYou": false,
+    "note": "Sinds je verhuizing minder contact."
+  }
+]
