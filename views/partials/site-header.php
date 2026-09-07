@@ -3,21 +3,31 @@
 declare(strict_types=1);
 
 /**
- * Header on every page: the brand and the menu.
+ * The bar on top of every screen.
+ *
+ * Shows the name of the system and, once someone is logged in, their number
+ * right next to it. That order is deliberate: the app says who it is, then what
+ * you are worth.
  *
  * @var string $nav Navigation item to mark as current.
  */
 
+$headerUser = currentUser();
+
 ?>
 <header class="site-header">
     <div class="container site-header__inner">
-        <a class="brand" href="<?= e(url()) ?>">
-            <span class="brand__mark" aria-hidden="true">D</span>
-            <span class="brand__name"><?= e(APP_NAME) ?></span>
-        </a>
+        <a class="brand" href="<?= e(url()) ?>"><?= e(APP_NAME) ?></a>
+
+        <?php if ($headerUser !== null): ?>
+            <a class="brand-score" href="<?= e(url()) ?>">
+                <span class="brand-score__value numeric"><?= e((int) $headerUser['score']) ?></span>
+                <span>draagvlak</span>
+            </a>
+        <?php endif; ?>
 
         <button
-            class="icon-btn nav-toggle"
+            class="nav-toggle"
             type="button"
             data-component="nav-toggle"
             aria-controls="site-nav"
@@ -29,6 +39,6 @@ declare(strict_types=1);
             <span class="visually-hidden">Menu</span>
         </button>
 
-        <?php partial('site-nav', ['nav' => $nav]); ?>
+        <?php partial('site-nav', ['nav' => $nav, 'user' => $headerUser]); ?>
     </div>
 </header>

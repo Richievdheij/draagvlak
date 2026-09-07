@@ -1,0 +1,41 @@
+/*
+ * The closing block: where you ended up, and what every choice did.
+ *
+ * Appears once nothing is waiting any more. It reads back the session without
+ * a single word of comfort.
+ */
+
+.summary {
+    padding: var(--space-5);
+    background-color: var(--color-surface);
+    border: var(--border-hairline);
+    border-radius: var(--radius-md);
+}
+
+.summary__title {
+    margin-block-end: var(--space-3);
+    font-size: var(--text-xl);
+}
+
+.summary__body {
+    color: var(--color-text-soft);
+    font-size: var(--text-sm);
+}
+
+.summary__list {
+    margin-block-start: var(--space-4);
+}
+
+.summary__list li {
+    padding-block: var(--space-2);
+    border-block-start: var(--border-hairline);
+    color: var(--color-text-soft);
+    font-size: var(--text-sm);
+}
+
+/* The last sentence: tomorrow it starts again, whatever you did today. */
+.summary__closing {
+    margin-block-start: var(--space-4);
+    color: var(--color-text-soft);
+    font-size: var(--text-sm);
+}

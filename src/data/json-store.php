@@ -32,13 +32,13 @@ function loadJson(string $name): array
     $file = jsonPath($name);
 
     if (!is_file($file)) {
-        throw new RuntimeException(sprintf('Databestand "%s" bestaat niet: %s', $name, $file));
+        throw new RuntimeException(sprintf('Data file "%s" does not exist: %s', $name, $file));
     }
 
     $decoded = json_decode((string) file_get_contents($file), true, 512, JSON_THROW_ON_ERROR);
 
     if (!is_array($decoded)) {
-        throw new RuntimeException(sprintf('Databestand "%s" bevat geen JSON-object of -array.', $name));
+        throw new RuntimeException(sprintf('Data file "%s" does not contain a JSON object or array.', $name));
     }
 
     return $cache[$name] = $decoded;
@@ -62,7 +62,7 @@ function saveJson(string $name, array $data): void
     $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
 
     if (file_put_contents($file, $json . "\n", LOCK_EX) === false) {
-        throw new RuntimeException(sprintf('Databestand "%s" kan niet worden geschreven: %s', $name, $file));
+        throw new RuntimeException(sprintf('Data file "%s" cannot be written: %s', $name, $file));
     }
 }
 
@@ -75,7 +75,7 @@ function saveJson(string $name, array $data): void
 function jsonPath(string $name): string
 {
     if (preg_match('/^[a-z0-9-]+$/', $name) !== 1) {
-        throw new RuntimeException(sprintf('Ongeldige naam voor een databestand: "%s".', $name));
+        throw new RuntimeException(sprintf('Invalid name for a data file: "%s".', $name));
     }
 
     return DATA_PATH . '/' . $name . '.json';

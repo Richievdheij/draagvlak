@@ -8,7 +8,9 @@
 .vscode/
 *.swp
 
-# Local overrides and logs.
+# Local overrides and logs. Your database password lives in config.local.php
+# and stays on your own machine.
+config.local.php
 .env
 .env.local
 *.log

@@ -1,0 +1,34 @@
+/*
+ * One message about something that already happened.
+ *
+ * Gaining points gets the accent, losing points goes quiet and beige, and only
+ * a form that is genuinely wrong is allowed to look like an error.
+ */
+
+.notice {
+    padding: var(--space-3) var(--space-4);
+    background-color: var(--color-surface);
+    border: var(--border-hairline);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    line-height: 1.4;
+}
+
+.notice strong {
+    display: block;
+    font-weight: var(--weight-semibold);
+}
+
+.notice--success {
+    border-color: var(--color-accent);
+}
+
+.notice--loss {
+    background-color: var(--color-surface-muted);
+    border-color: var(--color-border-muted);
+}
+
+.notice--danger {
+    background-color: var(--color-danger-soft);
+    border-color: var(--color-danger);
+}

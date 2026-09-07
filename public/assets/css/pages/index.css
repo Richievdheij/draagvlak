@@ -1,0 +1,28 @@
+/*
+ * The home screen.
+ *
+ * Only what exists on this screen alone. The number, the cards, the offer and
+ * the summary are partials and components, so they live in their own files.
+ */
+
+/* The buttons that take someone off your list. They wrap instead of scrolling,
+   so removing a person never looks like the main action. */
+.home__cleanup {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-block-start: var(--space-4);
+}
+
+.home__cleanup .btn {
+    flex: 1 1 auto;
+}
+
+/* Nothing waiting: the app says the drop has stopped, not that you did well. */
+.home__empty {
+    padding: var(--space-5);
+    background-color: var(--color-surface-muted);
+    border-radius: var(--radius-md);
+    color: var(--color-text-soft);
+    font-size: var(--text-sm);
+}

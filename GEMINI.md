@@ -21,16 +21,21 @@ Answer the person in Dutch. Keep the code, comments and commit messages English.
 ## Stop conditions
 
 Ask before deleting or renaming files, adding dependencies, changing how `bootstrap.php`
-loads `src/` or how `page()` and the layout work together, replacing a palette or a
-typeface in `tokens.css`, touching `data/` during a test session, or editing `.github/`.
+loads `src/` or how `page()` and the layout work together, changing a constant in
+`src/score/score-rules.php`, dropping or restructuring the database, replacing a palette
+or a typeface in `base/tokens.css`, touching `data/scenario.json` during a test session,
+or editing `.github/`.
 
 ## Running it
 
 ```bash
 composer install
+composer db:setup       # database, tables and demo content
 composer start          # http://localhost:8000
 composer lint
 ```
+
+Log in with `sam@draagvlak.test` and the password `draagvlak`.
 
 ## Git
 

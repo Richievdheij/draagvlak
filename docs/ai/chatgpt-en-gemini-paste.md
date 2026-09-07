@@ -19,22 +19,28 @@ Hogeschool Rotterdam (CMGT). It shows a fictional 2038 app that turns social sup
 into a public score from 0 to 100. It is built to be user-tested, not shipped.
 
 STACK
-PHP 8.4 or newer, no framework, no router. Vanilla ES modules, no bundler, no JS
-libraries. CSS custom properties, no preprocessor. JSON files instead of a database.
-Per-run state in the PHP session. Never introduce a framework, build step, CSS library
-or database.
+PHP 8.4 or newer, no framework, no router. MySQL through PDO, no ORM and no query
+builder. Vanilla ES modules, no bundler, no JS libraries. CSS custom properties, no
+preprocessor. Per-visit state in the PHP session, everything else in the database.
+Never introduce a framework, build step, CSS library or ORM.
 
 LAYOUT (page-based, deliberately not MVC, every folder name lowercase)
 public/            one PHP file per screen, the only web-reachable folder
-public/assets/css  fonts.css, tokens.css, base.css, components.css, screens.css
+public/assets/css  base/, layouts/, partials/, components/, pages/ - one file per place
 public/assets/js   app.js entry plus modules/
 public/assets/fonts self-hosted Outfit and Inter
-src/support        escaping and URLs, session and flashes, request and redirect, the page template
-src/data           reading and writing the JSON files
+src/support        config, escaping and URLs, session and flashes, request, formatting, the page template
+src/data           the database connection and queries, the JSON reader, the seed
+src/auth           registering, logging in, closing a screen
+src/score          the rules of the scenario
+src/contacts       the list of people
+src/messages       the inbox and the response window
 views/layouts      the document printed around a screen
 views/partials     fragments used by the layout or by more than one page
-data/              JSON fixtures
+database/          schema.sql
+data/              scenario.json, the Dutch starting content
 bootstrap.php      required by every page: paths, session, and loading everything in src/
+config.php         database settings, overridden per machine by config.local.php
 
 NO IMPORTS
 bootstrap.php loads every PHP file in src/ automatically, in the global namespace.
@@ -46,8 +52,9 @@ HOW A PAGE LOOKS
 <?php
 declare(strict_types=1);
 require __DIR__ . '/../bootstrap.php';
+requireLogin();
 if (isPost()) { /* handle, then */ redirect('contacten'); }
-$contacts = loadJson('contacts');
+$contacts = activeContacts(currentUserId());
 page('Contacten');
 ?>
 <section class="section">...</section>
@@ -55,21 +62,38 @@ page('Contacten');
 page() captures the screen's output and views/layouts/app.php prints the document
 around it when the script ends. There is no header include and no closing call.
 Available helpers: e(), attributes(), asset(), url(), currentPage(), isCurrentPage(),
-page(), partial(), flash(), redirect(), isPost(), input(), inputInt(), csrfToken(),
-csrfField(), isValidCsrf(), sessionGet/Set/Forget/Reset(), loadJson(), saveJson().
+page(), partial(), flash(), redirect(), isPost(), input(), inputInt(), csrfField(),
+isValidCsrf(), rememberForm(), takeForm(), sessionGet/Set/Forget/Reset(),
+requireLogin(), requireGuest(), currentUser(), currentUserId(), dbAll(), dbFirst(),
+dbValue(), dbRun(), dbInsert(), loadJson(), timeParts(), formatCountdown(),
+formatPrice(), initial().
+
+DATABASE
+MySQL through PDO. Four tables: users, contacts, messages, score_events. Every query is
+a prepared statement with the values passed separately - dbAll('... WHERE user_id = ?',
+[$userId]) - and never a value inside the SQL string. Always look a row up together
+with the id of the logged-in user. Tables are plural snake_case, columns snake_case,
+while the same value in PHP and JSON is camelCase. Schema changes go in
+database/schema.sql followed by "composer db:fresh"; there are no migrations.
+
+ACCOUNTS
+password_hash() and password_verify(), session_regenerate_id() on login, five wrong
+attempts lock the form. requireLogin() on the first line of a screen. Every POST form
+prints csrfField() and is handled behind isValidCsrf(), and ends in redirect().
 
 LANGUAGE
-Code is English: identifiers, comments, docblocks, CSS classes, JSON keys, commits,
-console messages. Dutch is only what the participant reads on screen. Internal keys
-stay English even when they represent Dutch concepts; the Dutch wording lives in the
-page or partial that prints it. Never put a Dutch string in src/.
+Code is English: identifiers, comments, docblocks, CSS classes, JSON keys, database
+tables and columns, commits, console messages. Dutch is only what the participant reads
+on screen, plus data/scenario.json. Internal keys stay English even when they represent
+Dutch concepts; a function returns 'answered_in_time' and the page writes the Dutch
+sentence for it. Never put a Dutch string in src/.
 
 NAMING
 Folders lowercase kebab-case. PHP functions and variables camelCase, classes
 PascalCase, constants UPPER_SNAKE_CASE. Function files kebab-case.php, class files
 PascalCase.php, page files lowercase Dutch. CSS BEM-style: .block, .block__element,
 .block--modifier, state classes .is-open. JS camelCase in kebab-case files. JSON keys
-camelCase. Data attributes kebab-case.
+camelCase. Data attributes kebab-case. Tables plural snake_case, columns snake_case.
 
 COMMENTS
 Docblock on every function in src/, every exported JS function, every layout and every
@@ -81,14 +105,15 @@ code, no history in comments, no names or dates.
 
 DESIGN
 Every colour, size, font and radius comes from a custom property in
-public/assets/css/tokens.css. A literal hex code anywhere else is a bug. Tokens are
+public/assets/css/base/tokens.css. A literal hex code anywhere else is a bug. Tokens are
 layered: primitives build semantic tokens (--color-surface, --color-accent), and light
-and dark share one definition through light-dark(). The app looks like calm
-institutional software on purpose; do not make it darker or more futuristic, and do not
-add gradients, shadows or glassmorphism. Outfit for display, Inter for reading, both
-self-hosted; numbers that change get class="numeric". Mobile first and responsive, one
-breakpoint at 48em, no phone frame. WCAG AA contrast, visible focus, 44px touch
-targets, reduced motion respected.
+and dark share one definition through light-dark(). Stylesheets mirror the code, one
+file per place: base/, layouts/, partials/, components/, pages/<screen>.css, all loaded
+automatically. Soft mint, white cards on pale green, rounded corners, hairlines instead
+of shadows; it looks friendly on purpose. Losing points is never red, it goes quiet and
+beige. Outfit for display, Inter for reading, both self-hosted; numbers that change get
+class="numeric". The app is one phone-width column, centred on a laptop. WCAG AA
+contrast, visible focus, 44px touch targets, reduced motion respected.
 
 JAVASCRIPT
 app.js starts a module for every element with data-component="name", loading
@@ -116,11 +141,13 @@ something exists, ask for that file. State in one line what you assumed.
 | Vraag gaat over | Plak dit erbij |
 | --- | --- |
 | Een scherm | het bestand uit `public/` |
-| Een helper | het bestand uit `src/support/` of `src/data/` |
-| Styling | `public/assets/css/tokens.css` en het component-bestand |
+| Een helper | het bestand uit de juiste map in `src/` |
+| Styling | `public/assets/css/base/tokens.css` en het bestand van dat onderdeel |
 | Een herhaald blokje | het bestand uit `views/partials/` |
 | De pagina-opbouw | `bootstrap.php` en `views/layouts/app.php` |
-| Data | het JSON-bestand uit `data/` |
+| De database | `database/schema.sql` en `src/data/database.php` |
+| Inloggen | `src/auth/auth.php` |
+| De startinhoud | `data/scenario.json` |
 
 ## Waar je op moet letten
 

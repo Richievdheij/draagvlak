@@ -5,7 +5,9 @@
     "license": "MIT",
     "require": {
         "php": ">=8.4",
-        "ext-mbstring": "*"
+        "ext-mbstring": "*",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*"
     },
     "config": {
         "optimize-autoloader": true,
@@ -13,10 +15,14 @@
     },
     "scripts": {
         "start": "php -S localhost:8000 -t public",
-        "lint": "find bootstrap.php public src views -name '*.php' -print0 | xargs -0 -n1 php -l"
+        "lint": "find bootstrap.php config.php bin public src views -name '*.php' -print0 | xargs -0 -n1 php -l",
+        "db:setup": "php bin/setup-database.php",
+        "db:fresh": "php bin/setup-database.php --fresh"
     },
     "scripts-descriptions": {
         "start": "Start the local development server on http://localhost:8000",
-        "lint": "Check every PHP file for syntax errors"
+        "lint": "Check every PHP file for syntax errors",
+        "db:setup": "Create the database, its tables and the demo content",
+        "db:fresh": "Drop the database and build it again, for a clean test session"
     }
 }

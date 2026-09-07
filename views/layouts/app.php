@@ -30,8 +30,8 @@ declare(strict_types=1);
     <?php /* The browser chrome on a phone follows the theme. A meta tag cannot
              read a custom property, so these two values are the only place
              where a colour from tokens.css is repeated by hand. */ ?>
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#0b1418" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f2f6f3" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0f1613" media="(prefers-color-scheme: dark)">
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 

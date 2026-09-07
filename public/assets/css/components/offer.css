@@ -1,0 +1,56 @@
+/*
+ * The paid subscription.
+ *
+ * The only block with the accent colour on its edge, and the only price in the
+ * app. The discount that is running out sits right next to it, because the
+ * pressure is the product.
+ */
+
+.offer {
+    padding: var(--space-5);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-md);
+}
+
+.offer__kicker {
+    color: var(--color-accent);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+}
+
+.offer__title {
+    margin-block: var(--space-1) var(--space-2);
+    font-size: var(--text-xl);
+}
+
+.offer__body {
+    color: var(--color-text-soft);
+    font-size: var(--text-sm);
+}
+
+.offer__price {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    margin-block: var(--space-4);
+}
+
+.offer__now {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-semibold);
+}
+
+.offer__was {
+    color: var(--color-text-faint);
+    font-size: var(--text-sm);
+    text-decoration: line-through;
+}
+
+.offer__left {
+    margin-inline-start: auto;
+    color: var(--color-text-faint);
+    font-size: var(--text-2xs);
+    font-variant-numeric: tabular-nums;
+}

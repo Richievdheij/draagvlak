@@ -29,17 +29,23 @@ Ask before you do any of these:
 - adding a dependency to `composer.json` or `package.json`
 - changing how `bootstrap.php` loads `src/`, or the contract between `page()` and
   `views/layouts/app.php`: every screen depends on both
-- changing anything in `data/` while a test session is running
-- replacing a palette or a typeface in `public/assets/css/tokens.css`
+- changing a constant in `src/score/score-rules.php` (those numbers are the scenario)
+- dropping or restructuring the database, or running `composer db:fresh` while a test
+  session is running
+- changing `data/scenario.json` while a test session is running
+- replacing a palette or a typeface in `public/assets/css/base/tokens.css`
 - editing `.github/`
 
 ## Running it
 
 ```bash
 composer install
+composer db:setup       # database, tables and demo content
 composer start          # http://localhost:8000
 composer lint
 ```
+
+Log in with `sam@draagvlak.test` and the password `draagvlak`.
 
 There is no test suite. Verification means opening the page, at phone width too.
 

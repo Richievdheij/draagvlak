@@ -1,0 +1,35 @@
+/*
+ * The bar that runs out while someone waits for an answer.
+ *
+ * JavaScript only changes the width and the label; if it never runs, the bar
+ * stands still at the value the server printed and the page still works.
+ */
+
+.timer {
+    --timer-height: 6px;
+
+    margin-block-start: var(--space-4);
+}
+
+.timer__bar {
+    height: var(--timer-height);
+    overflow: hidden;
+    background-color: var(--color-border);
+    border-radius: var(--radius-xs);
+}
+
+.timer__fill {
+    display: block;
+    height: 100%;
+    background-color: var(--color-accent);
+    border-radius: inherit;
+    transition: width 1s linear;
+}
+
+.timer__marks {
+    display: flex;
+    justify-content: space-between;
+    margin-block-start: var(--space-2);
+    color: var(--color-text-faint);
+    font-size: var(--text-2xs);
+}

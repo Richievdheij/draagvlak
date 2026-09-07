@@ -37,6 +37,9 @@ themaknop als data-attribuut in `views/partials/site-footer.php` in plaats van i
 | Bestand met een class | PascalCase | `ScoreCalculator.php` |
 | Pagina in `public/` | Nederlands, kleine letters | `noodcontacten.php` |
 | Layout en partial | kebab-case | `site-header.php` |
+| Tabel in de database | meervoud, snake_case | `score_events` |
+| Kolom in de database | snake_case | `respond_within_seconds` |
+| CSS-bestand | heet naar wat het opmaakt | `partials/contact-card.css` |
 | CSS-blok | kebab-case | `.contact-row` |
 | CSS-onderdeel | dubbele underscore | `.contact-row__name` |
 | CSS-variant | dubbel streepje | `.contact-row--slow` |
@@ -143,6 +146,28 @@ komt hij van een gebruiker.
 
 Bouw je attributen op uit data, gebruik dan `attributes()`. Die escapet elke waarde en
 laat een attribuut weg als de waarde `null` of `false` is.
+
+Let op die ene naad: in de database heet een kolom `respond_within_seconds`, en dezelfde
+waarde heet in PHP en in JSON `respondWithinSeconds`. Dat is geen slordigheid maar de
+gewone schrijfwijze van beide werelden.
+
+## Queries
+
+Elke query is een prepared statement. De waarden gaan er apart in, met vraagtekens op de
+plek waar ze horen:
+
+```php
+$contacts = dbAll('SELECT * FROM contacts WHERE user_id = ?', [$userId]);
+```
+
+Nooit zo, ook niet met een getal dat je zelf hebt bedacht:
+
+```php
+$contacts = dbAll("SELECT * FROM contacts WHERE user_id = $userId");
+```
+
+En zoek een rij altijd samen met het id van de ingelogde gebruiker op. Doe je dat niet,
+dan kan iemand met een aangepast nummer in de URL bij andermans gegevens.
 
 ## Formulieren
 

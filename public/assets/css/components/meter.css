@@ -1,0 +1,33 @@
+/*
+ * The bar under a score, with the threshold marked on it.
+ *
+ * The mark is the whole point: you can always see how far you are from the
+ * number that pays out.
+ */
+
+.meter {
+    --meter-height: 5px;
+    --meter-mark-height: 13px;
+
+    position: relative;
+    height: var(--meter-height);
+    margin-block: var(--space-4) var(--space-3);
+    background-color: var(--color-border);
+    border-radius: var(--radius-xs);
+}
+
+.meter__fill {
+    display: block;
+    height: 100%;
+    background-color: var(--color-accent);
+    border-radius: inherit;
+    transition: width var(--transition-slow);
+}
+
+.meter__mark {
+    position: absolute;
+    inset-block-start: calc((var(--meter-mark-height) - var(--meter-height)) / -2);
+    width: 2px;
+    height: var(--meter-mark-height);
+    background-color: var(--color-text-faint);
+}

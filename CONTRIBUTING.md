@@ -84,23 +84,44 @@ Alles wat je print gaat door `e()`.
 
 Er staat geen losse hexcode of pixelwaarde buiten `tokens.css`.
 
-Je nieuwe scherm staat in `public/`, je herhaalde stukjes HTML in `views/partials/`, en
-je rekenwerk in `src/`. Registreren hoef je niets: een nieuw bestand in `src/` doet het
-meteen.
+Je nieuwe scherm staat in `public/`, de opmaak ervan in `assets/css/pages/` onder
+dezelfde naam, je herhaalde stukjes HTML in `views/partials/`, en je rekenwerk in `src/`.
+Registreren hoef je niets: een nieuw bestand in `src/` of in een CSS-map doet het meteen.
+
+Elke query is een prepared statement met vraagtekens, en je zoekt een rij altijd samen
+met het id van de ingelogde gebruiker op.
 
 ## Wat je eerst overlegt
 
 Een dependency toevoegen aan `composer.json` of `package.json`. Dit project draait
-bewust zonder framework en zonder bundler.
+bewust zonder framework, zonder bundler en zonder ORM.
 
 De manier waarop `bootstrap.php` de bestanden uit `src/` inlaadt, en de afspraak tussen
 `page()` en `views/layouts/app.php`. Elk scherm hangt daaraan.
 
-Een kleur of een lettertype vervangen in `tokens.css`. Eén token bijstellen is normaal
-werk; het palet omgooien niet.
+De getallen in `src/score/score-rules.php`. Die zijn het scenario, geen technische
+keuze: verander je ze in je eentje, dan zijn de testsessies onderling niet meer te
+vergelijken.
 
-`data/*.json` aanpassen terwijl er iemand aan het testen is, want dan zijn de
-testsessies onderling niet meer te vergelijken.
+Een kleur of een lettertype vervangen in `base/tokens.css`. Eén token bijstellen is
+normaal werk; het palet omgooien niet.
+
+`database/schema.sql` aanpassen, want daarna moet iedereen `composer db:fresh` draaien en
+is zijn lokale data weg. En helemaal niet terwijl er iemand aan het testen is; dat geldt
+ook voor `data/scenario.json`.
+
+## Je eigen databasegegevens
+
+Draait MySQL bij jou met een wachtwoord of op een andere poort? Zet dat niet in
+`config.php`, maar maak `config.local.php` met alleen jouw regels erin:
+
+```php
+<?php
+
+return ['db' => ['user' => 'draagvlak', 'password' => 'secret']];
+```
+
+Dat bestand staat in `.gitignore` en blijft dus op jouw machine.
 
 ## AI
 

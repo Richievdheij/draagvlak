@@ -17,7 +17,8 @@ declare(strict_types=1);
  */
 function startSession(): void
 {
-    if (session_status() === PHP_SESSION_ACTIVE) {
+    // A command line script has no visitor and no cookies to hang a session on.
+    if (PHP_SAPI === 'cli' || session_status() === PHP_SESSION_ACTIVE) {
         return;
     }
 
@@ -74,18 +75,23 @@ function sessionReset(): void
  * Set it before a redirect, not before printing the page: the layout prints and
  * clears the queue, so a message set halfway down a page is already gone.
  *
- * @param string $message Dutch text, shown to the visitor as-is.
- * @param string $tone    'info', 'success' or 'danger'; drives the styling only.
+ * The title is printed on its own line above the text, which is how this app
+ * announces what a choice cost. Both are escaped when they are printed, so pass
+ * plain text and never HTML.
+ *
+ * @param string      $message Dutch text, shown to the visitor as-is.
+ * @param string      $tone    'info', 'success', 'loss' or 'danger'; styling only.
+ * @param string|null $title   Short Dutch heading, or null for a message without one.
  */
-function flash(string $message, string $tone = 'info'): void
+function flash(string $message, string $tone = 'info', ?string $title = null): void
 {
-    $_SESSION['flashes'][] = ['message' => $message, 'tone' => $tone];
+    $_SESSION['flashes'][] = ['message' => $message, 'tone' => $tone, 'title' => $title];
 }
 
 /**
  * Take every queued message and empty the queue.
  *
- * @return list<array{message: string, tone: string}>
+ * @return list<array{message: string, tone: string, title: string|null}>
  */
 function takeFlashes(): array
 {
@@ -93,6 +99,36 @@ function takeFlashes(): array
     unset($_SESSION['flashes']);
 
     return $flashes;
+}
+
+/**
+ * Keep what someone typed and what was wrong with it, for one page load.
+ *
+ * A form that fails redirects instead of printing itself again, so refreshing
+ * never submits twice. This is what survives that redirect.
+ *
+ * @param array<string, string> $values Field name to value. Never a password.
+ * @param array<string, string> $errors Field name to error key.
+ */
+function rememberForm(array $values, array $errors = []): void
+{
+    $_SESSION['form'] = ['values' => $values, 'errors' => $errors];
+}
+
+/**
+ * Read back the last submitted form and forget it.
+ *
+ * Call this once at the top of a screen with a form, then use what it returns
+ * to fill the fields again.
+ *
+ * @return array{values: array<string, string>, errors: array<string, string>}
+ */
+function takeForm(): array
+{
+    $form = $_SESSION['form'] ?? ['values' => [], 'errors' => []];
+    unset($_SESSION['form']);
+
+    return $form;
 }
 
 /**

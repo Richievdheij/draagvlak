@@ -1,0 +1,65 @@
+/*
+ * Small helpers you may use anywhere.
+ *
+ * Keep this list short. A helper that only one screen needs belongs in that
+ * screen's file in pages/, and a helper you find yourself repeating is usually
+ * a component.
+ */
+
+/* The column the whole app lives in: full width on a phone, centred on a
+   laptop. Wrap the content of the header, the main area and the footer in it. */
+.container {
+    width: min(100%, var(--width-app));
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+}
+
+/* A block of content with air above it. */
+.section + .section {
+    margin-block-start: var(--space-6);
+}
+
+.section__title {
+    margin-block-end: var(--space-3);
+    color: var(--color-text-soft);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+}
+
+/* Vertical rhythm without a margin on every child. Override the gap per block
+   with style="--stack-space: var(--space-5)". */
+.stack > * + * {
+    margin-block-start: var(--stack-space, var(--space-4));
+}
+
+/* Text that has to stay readable: never wider than about 60 characters. */
+.prose {
+    max-width: var(--width-prose);
+}
+
+.text-soft {
+    color: var(--color-text-soft);
+}
+
+.text-faint {
+    color: var(--color-text-faint);
+    font-size: var(--text-xs);
+}
+
+/* Figures that change or line up in a column keep the same width. */
+.numeric {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Visible to a screen reader, not to the eye. */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}

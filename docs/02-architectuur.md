@@ -22,23 +22,32 @@ aantal schermen ligt vast met het scenario.
 ```
 draagvlak/
 ├── public/              De enige map die de browser mag zien
-│   ├── index.php        Startscherm, en meteen het voorbeeld voor een nieuw scherm
+│   ├── index.php        Startscherm: je cijfer en de mensen erachter
+│   ├── inloggen.php     Inloggen, registreren en uitloggen
+│   ├── contacten.php    …en de andere schermen, nog leeg
 │   ├── favicon.svg
 │   └── assets/
-│       ├── css/         fonts, tokens, base, components, screens
+│       ├── css/         base, layouts, partials, components, pages
 │       ├── js/          app.js plus modules/
 │       └── fonts/       Outfit en Inter, in de repo
 ├── src/                 Alle helpers, per onderwerp gegroepeerd
-│   ├── support/         Escapen en URL's, sessie en meldingen, request en redirect,
-│   │                    en de paginatemplate
-│   └── data/            De JSON-bestanden lezen en schrijven
+│   ├── support/         Instellingen, escapen en URL's, sessie en meldingen,
+│   │                    request en redirect, opmaak, en de paginatemplate
+│   ├── data/            De database, de queries en de startinhoud
+│   ├── auth/            Registreren, inloggen en schermen afschermen
+│   ├── score/           De regels van het scenario en wat een keuze kost
+│   ├── contacts/        De lijst met mensen, en iemand eraf halen
+│   └── messages/        De inbox, het reactievenster en de uitkomst
 ├── views/
 │   ├── layouts/         Het document dat om elk scherm heen wordt geprint
 │   └── partials/        Stukjes HTML die op meer dan één plek staan
-├── data/                JSON-bestanden in plaats van een database
+├── database/            schema.sql: hoe de tabellen eruitzien
+├── bin/                 Scripts die je via Composer draait
+├── data/                scenario.json: de inhoud waarmee een deelnemer begint
 ├── docs/                Deze documentatie
 ├── bootstrap.php        Wordt door elke pagina als eerste ingeladen
-└── composer.json        De start- en lint-commando's
+├── config.php           Databasegegevens, per machine te overschrijven
+└── composer.json        De start-, lint- en databasecommando's
 ```
 
 Alle mapnamen zijn kleine letters. Staat er ergens een map met een hoofdletter, dan is
@@ -54,13 +63,14 @@ een professionele PHP-repo er anders uitziet dan de map waar je in les 1 mee beg
 
 ## Wat een pagina doet
 
-Elke pagina volgt dezelfde vier stappen, in deze volgorde:
+Elke pagina volgt dezelfde vijf stappen, in deze volgorde:
 
 ```php
-require __DIR__ . '/../bootstrap.php';   // 1. inladen
-if (isPost()) { /* ... */ redirect(); }   // 2. formulier afhandelen
-$contacts = loadJson('contacts');         // 3. data ophalen
-page('Contacten');                        // 4. daarna alleen nog HTML
+require __DIR__ . '/../bootstrap.php';        // 1. inladen
+requireLogin();                                // 2. wie mag dit zien
+if (isPost()) { /* ... */ redirect(); }        // 3. formulier afhandelen
+$contacts = activeContacts(currentUserId());   // 4. data ophalen
+page('Contacten');                             // 5. daarna alleen nog HTML
 ```
 
 Er staat nooit een berekening na stap 4. Moet je iets uitrekenen, dan schrijf je daar
@@ -98,18 +108,61 @@ pagina veranderen, dan doe je dat in de layout of in een partial, en niet in de 
 Een scherm dat alleen doorstuurt (bijvoorbeeld een resetknop) roept `page()` helemaal
 niet aan: `redirect()` gooit de opgevangen inhoud weg en stuurt alleen een redirect.
 
-## Waar staat de stand van het spel
+## De database
 
-Er is geen database en geen login. Wat een deelnemer tijdens één run doet, staat in de
-PHP-sessie, dus in een cookie op die ene browser. Dat is precies wat een testsessie nodig
-heeft: twee onderzoekers kunnen tegelijk testen zonder elkaars run te overschrijven.
+Er is een echte database: MySQL, via PDO. Geen ORM en geen query builder, gewoon SQL die
+je zelf leest.
 
-De vaste gegevens staan in `data/*.json`. Wil je het scenario aanscherpen tussen twee
-sessies door, dan pas je JSON aan en niet de code.
+```bash
+composer db:setup    # maakt de database, de tabellen en de demo-inhoud
+composer db:fresh    # gooit alles weg en bouwt het opnieuw op
+```
+
+De tabellen staan in `database/schema.sql`. Het zijn er vier:
+
+`users` is een account met een naam, een e-mailadres, een gehasht wachtwoord en een
+cijfer. `contacts` zijn de mensen van één account. `messages` zijn hun berichten, met het
+moment van binnenkomst, het reactievenster en wat er uiteindelijk mee gebeurd is.
+`score_events` is de geschiedenis: elke puntenverandering wordt daar apart bijgeschreven,
+zodat je een sessie achteraf kunt teruglezen.
+
+Vier functies gebruik je in de praktijk: `dbAll()` voor meer rijen, `dbFirst()` voor één
+rij, `dbValue()` voor één waarde en `dbRun()` voor iets wat je verandert. Alles gaat als
+prepared statement, dus met vraagtekens en een aparte lijst waarden:
+
+```php
+$contacts = dbAll('SELECT * FROM contacts WHERE user_id = ?', [$userId]);
+```
+
+Zet nooit een waarde in de tekst van de query zelf, ook niet eentje die je zelf hebt
+getypt. Zo houd je SQL-injectie buiten de deur, en het is een gewoonte die je in elk
+volgend project nodig hebt.
+
+Zoek een rij ook altijd samen met het id van de ingelogde gebruiker op. Anders komt
+iemand met een aangepast nummer in de URL bij andermans gegevens.
+
+De Nederlandse startinhoud staat niet in de code maar in `data/scenario.json`. Bij het
+aanmaken van een account wordt die met `seedScenarioFor()` in de database gezet, zodat
+elke deelnemer met dezelfde drie mensen begint.
+
+## Inloggen
+
+`requireLogin()` op de eerste regel van een scherm sluit het af voor wie niet is
+ingelogd; die wordt naar het inlogscherm gestuurd en komt na het inloggen alsnog op de
+pagina die hij wilde. `requireGuest()` doet het omgekeerde op het inlog- en
+registratiescherm.
+
+Wachtwoorden worden gehasht met `password_hash()` en nergens anders bewaard. Bij een
+geslaagde login krijgt de sessie een nieuw id, en na vijf mislukte pogingen gaat het
+formulier een kwartier op slot.
+
+Elk formulier met POST krijgt `<?= csrfField() ?>` mee en wordt afgehandeld achter
+`isValidCsrf()`. Wat een deelnemer tijdens één bezoek doet, staat verder in de sessie;
+alles wat een refresh moet overleven staat in de database.
 
 ## Wat we bewust niet doen
 
-Geen framework, geen router, geen bundler, geen CSS-library, geen database en geen
-inlogsysteem. Elk van die dingen is verdedigbaar in een echt product en kost hier alleen
-maar tijd die naar de schermen zelf moet. Kom je iets tegen dat er echt niet zonder kan,
-bespreek dat dan eerst met het team in plaats van het toe te voegen.
+Geen framework, geen router, geen bundler, geen CSS-library en geen ORM. Elk van die
+dingen is verdedigbaar in een echt product en kost hier alleen maar tijd die naar de
+schermen zelf moet. Kom je iets tegen dat er echt niet zonder kan, bespreek dat dan eerst
+met het team in plaats van het toe te voegen.

@@ -69,7 +69,7 @@ function finishPage(): void
     $file = VIEWS_PATH . '/layouts/' . $state['layout'] . '.php';
 
     if (!is_file($file)) {
-        throw new RuntimeException(sprintf('Layout "%s" bestaat niet: %s', $state['layout'], $file));
+        throw new RuntimeException(sprintf('Layout "%s" does not exist: %s', $state['layout'], $file));
     }
 
     $title = (string) $state['title'];
@@ -115,7 +115,7 @@ function partial(string $name, array $data = []): void
     $file = VIEWS_PATH . '/partials/' . $name . '.php';
 
     if (!is_file($file)) {
-        throw new RuntimeException(sprintf('Partial "%s" bestaat niet: %s', $name, $file));
+        throw new RuntimeException(sprintf('Partial "%s" does not exist: %s', $name, $file));
     }
 
     extract($data, EXTR_SKIP);
@@ -126,22 +126,50 @@ function partial(string $name, array $data = []): void
 /**
  * Every stylesheet, in the order the browser has to load them.
  *
- * The four known files come first in their fixed order, because each one may
- * override the previous. Any other stylesheet you drop in assets/css/ is added
- * after that, alphabetically, so a new file needs no edit here or in the layout.
+ * The folders mirror the code: base/ is the foundation, then the layout, then
+ * the partials, then the components, and last the one file that belongs to this
+ * page. Later files may override earlier ones, which is why the order is fixed
+ * and not alphabetical across the whole set.
+ *
+ * Nothing has to be registered. Drop site-header.css in css/partials/ and it is
+ * loaded; add css/pages/contacten.css and it is loaded on contacten.php only.
  *
  * @return list<string> Ready-to-print URLs, cache-busted by asset().
  */
 function stylesheets(): array
 {
-    $ordered = ['fonts.css', 'tokens.css', 'base.css', 'components.css', 'screens.css'];
+    $files = [
+        ...cssFilesIn('base', ['fonts.css', 'tokens.css', 'reset.css', 'elements.css', 'utilities.css']),
+        ...cssFilesIn('layouts'),
+        ...cssFilesIn('partials'),
+        ...cssFilesIn('components'),
+    ];
 
-    $found = array_map('basename', glob(PUBLIC_PATH . '/assets/css/*.css') ?: []);
-    sort($found);
+    $page = 'pages/' . currentPage() . '.css';
 
-    $files = [...array_intersect($ordered, $found), ...array_diff($found, $ordered)];
+    if (is_file(PUBLIC_PATH . '/assets/css/' . $page)) {
+        $files[] = $page;
+    }
 
     return array_map(static fn (string $file): string => asset('css/' . $file), $files);
+}
+
+/**
+ * The stylesheets in one folder of assets/css/, as paths relative to that
+ * folder's parent.
+ *
+ * @param string       $folder Folder name, for example 'components'.
+ * @param list<string> $first  File names that have to come first, in this order.
+ * @return list<string>
+ */
+function cssFilesIn(string $folder, array $first = []): array
+{
+    $found = array_map('basename', glob(PUBLIC_PATH . '/assets/css/' . $folder . '/*.css') ?: []);
+    sort($found);
+
+    $ordered = [...array_intersect($first, $found), ...array_diff($found, $first)];
+
+    return array_map(static fn (string $file): string => $folder . '/' . $file, $ordered);
 }
 
 /**

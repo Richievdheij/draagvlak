@@ -1,0 +1,27 @@
+/*
+ * The circle with a letter in it, standing in for a photo.
+ *
+ * A photo would make the person real, and this app is about what is left of a
+ * person once they are a number.
+ */
+
+.avatar {
+    --avatar-size: 2.75rem;
+
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: var(--avatar-size);
+    height: var(--avatar-size);
+    background-color: var(--color-accent-soft);
+    color: var(--color-accent);
+    border-radius: 50%;
+    font-size: var(--text-lg);
+    font-weight: var(--weight-semibold);
+}
+
+.avatar--quiet {
+    background-color: var(--color-surface-muted);
+    color: var(--color-text-faint);
+}

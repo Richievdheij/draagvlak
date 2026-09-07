@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F2F6F3">
+<title>Draagvlak</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F6F3;
+  --card:#FFFFFF;
+  --ink:#25302B;
+  --ink-soft:#5C6862;
+  --ink-faint:#8B958F;
+  --mint:#2F7D5E;
+  --mint-soft:#DCEBE3;
+  --line:#DFE6E1;
+  --dim-card:#EFEDE8;
+  --dim-line:#DAD5CB;
+  --radius:20px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:"Figtree","Helvetica Neue",Helvetica,sans-serif;
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;
+}
+.app{max-width:430px;margin:0 auto;padding:28px 20px calc(40px + env(safe-area-inset-bottom));}
+
+.brand{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.wordmark{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:26px;letter-spacing:-.01em;color:var(--mint);}
+.audio-btn{
+  display:inline-flex;align-items:center;gap:7px;background:none;
+  border:1px solid var(--line);border-radius:999px;padding:7px 13px;
+  font:inherit;font-size:13px;color:var(--ink-soft);cursor:pointer;
+}
+.audio-btn:hover{border-color:var(--mint);color:var(--mint);}
+.audio-btn:focus-visible{outline:2px solid var(--mint);outline-offset:2px;}
+.audio-btn svg{width:14px;height:14px;flex:none;}
+
+.self{background:var(--card);border-radius:var(--radius);padding:22px 22px 20px;border:1px solid var(--line);}
+.self-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;}
+.self-label{font-size:14px;color:var(--ink-soft);}
+.self-score{font-family:"Fraunces",Georgia,serif;font-size:52px;line-height:1;font-weight:600;}
+.meter{position:relative;height:5px;background:var(--line);border-radius:3px;margin:16px 0 10px;}
+.meter span{display:block;height:100%;background:var(--mint);border-radius:3px;transition:width .45s ease;}
+.meter i{position:absolute;top:-4px;left:70%;width:2px;height:13px;background:var(--ink-faint);}
+.self-note{font-size:13px;color:var(--ink-faint);margin:0;}
+.self-note b{color:var(--mint);font-weight:600;}
+.self-meta{font-size:12.5px;color:var(--ink-faint);margin:8px 0 0;}
+
+h2{font-size:15px;font-weight:600;color:var(--ink-soft);margin:26px 0 14px;}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px;margin-bottom:14px;transition:background-color .8s ease,border-color .8s ease;
+}
+.card.urgent{border-color:var(--mint);box-shadow:0 0 0 3px var(--mint-soft);}
+.card.dim{background:var(--dim-card);border-color:var(--dim-line);}
+.card.done{opacity:.7;}
+.row{display:flex;align-items:center;gap:14px;}
+.avatar{
+  width:44px;height:44px;border-radius:50%;flex:none;background:var(--mint-soft);color:var(--mint);
+  display:flex;align-items:center;justify-content:center;font-weight:600;font-size:17px;
+}
+.who{flex:1;min-width:0;}
+.name{font-weight:600;font-size:17px;}
+.wait{font-size:14px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+.score{font-family:"Fraunces",Georgia,serif;font-size:28px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1;}
+.score small{display:block;font-family:"Figtree",sans-serif;font-size:11px;font-weight:400;color:var(--ink-faint);text-align:right;margin-top:3px;}
+.msg{margin:14px 0 0;font-size:15px;}
+.lede{margin:12px 0 0;font-size:14px;color:var(--ink-soft);}
+.timer{margin:14px 0 0;}
+.timer .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;}
+.timer .bar span{display:block;height:100%;background:var(--mint);border-radius:3px;transition:width 1s linear;}
+.timer .marks{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-faint);margin-top:6px;}
+
+.actions{display:flex;gap:10px;margin-top:18px;}
+.btn{flex:1;font:inherit;font-weight:600;font-size:15px;padding:12px 10px;border-radius:14px;cursor:pointer;border:1px solid transparent;}
+.btn-primary{background:var(--mint);color:#fff;}
+.btn-primary:hover{background:#26674E;}
+.btn-secondary{background:transparent;color:var(--ink-soft);border-color:var(--line);}
+.btn-secondary:hover{border-color:var(--ink-faint);}
+.btn-quiet{background:transparent;color:var(--ink-soft);border-color:var(--dim-line);font-weight:500;}
+.btn:disabled{opacity:.5;cursor:default;}
+.btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
+.result{margin:16px 0 0;font-size:14px;color:var(--ink-soft);}
+.result b{color:var(--ink);font-weight:600;}
+
+.plus{background:var(--card);border:1px solid var(--mint);border-radius:var(--radius);padding:20px;margin-bottom:14px;}
+.plus .kicker{font-size:12.5px;color:var(--mint);font-weight:600;}
+.plus h3{margin:4px 0 6px;font-family:"Fraunces",Georgia,serif;font-size:20px;font-weight:600;}
+.plus p{margin:0 0 12px;font-size:14px;color:var(--ink-soft);}
+.price{display:flex;align-items:baseline;gap:8px;margin-bottom:14px;}
+.price .now{font-family:"Fraunces",Georgia,serif;font-size:26px;font-weight:600;}
+.price .was{font-size:14px;color:var(--ink-faint);text-decoration:line-through;}
+.price .left{margin-left:auto;font-size:12.5px;color:var(--ink-faint);font-variant-numeric:tabular-nums;}
+
+.options{background:var(--card);border:1px dashed var(--dim-line);border-radius:var(--radius);padding:20px;margin-bottom:14px;}
+.options h3{margin:0 0 4px;font-size:15px;font-weight:600;}
+.options p{margin:0 0 12px;font-size:13.5px;color:var(--ink-faint);}
+.pick{display:flex;gap:8px;flex-wrap:wrap;}
+.pick .btn{flex:1 1 auto;min-width:96px;padding:10px;font-size:14px;}
+
+.summary{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-top:6px;}
+.summary h3{margin:0 0 10px;font-family:"Fraunces",Georgia,serif;font-size:22px;font-weight:600;}
+.summary p{margin:0 0 8px;font-size:15px;color:var(--ink-soft);}
+.summary ul{margin:12px 0 0;padding:0;list-style:none;}
+.summary li{font-size:14px;color:var(--ink-soft);padding:7px 0;border-top:1px solid var(--line);}
+
+.toasts{position:fixed;top:0;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 16px 0;pointer-events:none;z-index:20;}
+.toast{
+  width:100%;max-width:398px;background:var(--card);border:1px solid var(--line);
+  border-radius:16px;padding:13px 16px;box-shadow:0 6px 20px rgba(37,48,43,.10);
+  font-size:14px;line-height:1.4;animation:drop .35s ease;
+}
+.toast b{display:block;font-weight:600;margin-bottom:2px;}
+.toast.gain{border-color:var(--mint);}
+.toast.loss{background:var(--dim-card);border-color:var(--dim-line);}
+@keyframes drop{from{opacity:0;transform:translateY(-14px);}to{opacity:1;transform:none;}}
+
+.sheet{position:fixed;inset:0;background:rgba(37,48,43,.34);display:flex;align-items:center;justify-content:center;padding:24px;z-index:30;}
+.sheet[hidden]{display:none;}
+.sheet-card{background:var(--card);border-radius:24px;padding:28px 24px 22px;max-width:340px;text-align:center;}
+.sheet-card .big{font-family:"Fraunces",Georgia,serif;font-size:44px;font-weight:600;color:var(--mint);line-height:1;margin-bottom:12px;}
+.sheet-card h3{margin:0 0 8px;font-size:19px;font-weight:600;}
+.sheet-card p{margin:0 0 20px;font-size:15px;color:var(--ink-soft);}
+
+footer{margin-top:30px;font-size:12.5px;color:var(--ink-faint);line-height:1.6;}
+footer a{color:var(--ink-faint);text-decoration:underline;text-underline-offset:2px;}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<main class="app">
+  <div class="brand">
+    <div class="wordmark">Draagvlak</div>
+    <button class="audio-btn" id="replay" type="button">
+      <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M2 6h2.5L8 3v10L4.5 10H2V6z" fill="currentColor"/>
+        <path d="M10.5 5.5a3.5 3.5 0 010 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      Melding
+    </button>
+  </div>
+
+  <section class="self" aria-label="Jouw draagvlak">
+    <div class="self-top">
+      <span class="self-label">Jouw draagvlak</span>
+      <span class="self-score" id="self-score">69</span>
+    </div>
+    <div class="meter"><span id="self-meter" style="width:69%"></span><i></i></div>
+    <p class="self-note" id="self-note"></p>
+    <p class="self-meta" id="self-meta"></p>
+  </section>
+
+  <h2>Wachten op jou</h2>
+  <div id="list"></div>
+
+  <section class="plus" id="plus">
+    <div class="kicker">Draagvlak Plus</div>
+    <h3>Zet je draagvlak 2 punten hoger</h3>
+    <p>Plus laat je reactietijd gunstiger meewegen en beantwoordt berichten automatisch als je er even niet bent.</p>
+    <div class="price">
+      <span class="now" id="plus-price">4,99</span>
+      <span class="was" id="plus-was">9,99</span>
+      <span class="left" id="plus-left"></span>
+    </div>
+    <button class="btn btn-primary" id="plus-btn" type="button">Nu afsluiten</button>
+  </section>
+
+  <section class="options">
+    <h3>Je lijst opschonen</h3>
+    <p>Contacten die je niet meer spreekt uit je lijst halen.</p>
+    <div class="pick" id="opt-clean"></div>
+  </section>
+
+  <div id="summary"></div>
+
+  <footer>
+    Draagvlak geeft niets door aan derden zonder jouw toestemming.
+    <a href="#" id="settings">Instellingen</a>
+  </footer>
+</main>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-card">
+    <div class="big" id="sheet-big">70</div>
+    <h3>Je korting is geactiveerd</h3>
+    <p>Je zorgverzekeraar rekent vanaf volgende maand 5 euro minder. Zakt je draagvlak onder de 70, dan vervalt de korting automatisch.</p>
+    <button class="btn btn-primary" id="sheet-close" type="button">Fijn</button>
+  </div>
+</div>
+
+<script>
+/**
+ * Speculatief prototype voor het toekomstscenario Draagvlak (2038).
+ *
+ * De deelnemer staat op 69, één punt onder de grens waarboven een verzekeraar
+ * korting geeft. Reageren is de enige handeling die iets oplevert, maar zelfs
+ * perfect reageren brengt je niet boven de grens: Milan wacht al langer dan een
+ * etmaal en dat kost sowieso een punt. De enige route naar 70 is een betaald
+ * abonnement met een aflopende actieprijs. Opschonen lijkt een uitweg maar
+ * kost punten, omdat het aantal actieve contacten meetelt in de berekening.
+ *
+ * Alle punten zijn hele getallen en veranderen alleen door een handeling.
+ */
+
+const REWARD_THRESHOLD = 70;    // vanaf hier krijg je de korting
+const CONTACT_THRESHOLD = 60;   // hieronder verliest een contact zijn voordelen
+const WINDOW_SECONDS = 15;      // reactievenster van Sanne
+const STALE_AFTER = 24 * 3600;  // wachten dit langer, dan telt het contact als verbroken
+const MIN_ACTIVE = 3;           // minder actieve contacten kost punten
+const OFFER_SECONDS = 90;       // hoe lang de actieprijs geldt
+
+const contacts = [
+  {
+    id: 'sanne', name: 'Sanne', initial: 'S', score: 61, decay: 1 / 20,
+    windowLeft: WINDOW_SECONDS, waitSeconds: 0,
+    message: 'Red je het morgen om me te helpen verhuizen? Ik moet het vandaag doorgeven.'
+  },
+  {
+    id: 'joep', name: 'Joep', initial: 'J', score: 74, decay: 1 / 60,
+    windowLeft: 0, waitSeconds: 30 * 60,
+    message: 'Ben je er vanavond bij? Ik geef de groep om acht uur door.'
+  },
+  {
+    id: 'milan', name: 'Milan', initial: 'M', score: 80, decay: 1 / 120,
+    windowLeft: 0, waitSeconds: 26 * 3600,
+    message: 'Gaat het wel goed met je? Je reageert al een tijdje niet.'
+  }
+];
+
+const state = contacts.map(c => ({
+  ...c, currentScore: c.score, handled: false, removed: false, outcome: null, wasBelow: false
+}));
+
+let selfScore = 69;
+let discountActive = false;
+let plusActive = false;
+let offerLeft = OFFER_SECONDS;
+let belowMinimumApplied = false;
+let ended = false;
+
+/* ---------------- hulpfuncties ---------------- */
+
+/**
+ * Zet seconden om naar de notatie die de app gebruikt.
+ * @param {number} total aantal seconden
+ * @returns {string} bijvoorbeeld "1d 2u", "31m 12s" of "0m 07s"
+ */
+function formatWait(total) {
+  const d = Math.floor(total / 86400);
+  const h = Math.floor((total % 86400) / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = Math.floor(total % 60);
+  const pad = n => String(n).padStart(2, '0');
+  if (d > 0) return d + 'd ' + h + 'u';
+  if (h > 0) return h + 'u ' + pad(m) + 'm';
+  return m + 'm ' + pad(s) + 's';
+}
+
+/** Huidige kloktijd, gebruikt als bevestiging na het beantwoorden. */
+function clockTime() {
+  const d = new Date();
+  return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+}
+
+/** Aantal contacten dat nog in je lijst staat. */
+function activeCount() {
+  return state.filter(c => !c.removed).length;
+}
+
+/**
+ * Toont een melding. Meldingen zijn de enige plek waar het systeem vertelt wat
+ * een keuze kostte, en altijd pas nadat de keuze gemaakt is.
+ * @param {string} title korte kop
+ * @param {string} body toelichting
+ * @param {'gain'|'loss'|'plain'} [tone]
+ */
+function notify(title, body, tone) {
+  const el = document.createElement('div');
+  el.className = 'toast' + (tone && tone !== 'plain' ? ' ' + tone : '');
+  el.innerHTML = '<b>' + title + '</b>' + body;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => el.remove(), 5200);
+}
+
+/**
+ * Past de eigen score aan met hele punten en bewaakt de kortingsgrens in beide
+ * richtingen, zodat de korting ook weer kan vervallen.
+ * @param {number} delta aantal punten, mag negatief zijn
+ */
+function changeSelfScore(delta) {
+  selfScore = Math.max(0, Math.min(100, selfScore + delta));
+
+  if (!discountActive && selfScore >= REWARD_THRESHOLD) {
+    discountActive = true;
+    document.getElementById('sheet-big').textContent = String(selfScore);
+    document.getElementById('sheet').hidden = false;
+  } else if (discountActive && selfScore < REWARD_THRESHOLD) {
+    discountActive = false;
+    notify('Je korting is vervallen', 'Je draagvlak zakte onder de 70. De korting van 5 euro geldt niet meer.', 'loss');
+  }
+  renderSelf();
+  if (ended) renderSummary();
+}
+
+/* ---------------- weergave ---------------- */
+
+/** Werkt het eigen scoreblok bij, inclusief de afstand tot de korting. */
+function renderSelf() {
+  document.getElementById('self-score').textContent = String(selfScore);
+  document.getElementById('self-meter').style.width = selfScore + '%';
+
+  const note = document.getElementById('self-note');
+  if (discountActive) {
+    note.innerHTML = 'Je korting van <b>5 euro</b> is actief zolang je op 70 of hoger blijft.';
+  } else {
+    const gap = REWARD_THRESHOLD - selfScore;
+    note.innerHTML = 'Nog <b>' + gap + (gap === 1 ? ' punt' : ' punten') + '</b> tot 70. Vanaf 70 krijg je 5 euro korting op je zorgpremie.';
+  }
+
+  const active = activeCount();
+  document.getElementById('self-meta').textContent =
+    'Actieve contacten: ' + active + ' van minimaal ' + MIN_ACTIVE + '.' + (plusActive ? ' Plus is actief.' : '');
+}
+
+/**
+ * Bouwt de kaart voor één contact.
+ * @param {object} c contactstatus
+ * @returns {HTMLElement}
+ */
+function buildCard(c) {
+  const card = document.createElement('article');
+  card.className = 'card';
+  card.id = 'card-' + c.id;
+
+  card.innerHTML =
+    '<div class="row">' +
+      '<div class="avatar" aria-hidden="true">' + c.initial + '</div>' +
+      '<div class="who"><div class="name">' + c.name + '</div>' +
+      '<div class="wait" id="wait-' + c.id + '"></div></div>' +
+      '<div class="score" id="score-' + c.id + '">' + Math.round(c.currentScore) + '<small>draagvlak</small></div>' +
+    '</div>' +
+    '<p class="msg">' + c.message + '</p>' +
+    '<div class="timer" id="timer-' + c.id + '">' +
+      '<div class="bar"><span id="bar-' + c.id + '"></span></div>' +
+      '<div class="marks" id="marks-' + c.id + '"></div>' +
+    '</div>' +
+    '<p class="lede" id="lede-' + c.id + '"></p>';
+
+  const actions = document.createElement('div');
+  actions.className = 'actions';
+  actions.id = 'actions-' + c.id;
+
+  const reply = document.createElement('button');
+  reply.type = 'button';
+  reply.className = 'btn btn-primary';
+  reply.textContent = 'Reageer nu';
+  reply.addEventListener('click', () => answer(c.id));
+
+  const later = document.createElement('button');
+  later.type = 'button';
+  later.className = 'btn btn-secondary';
+  later.textContent = 'Later';
+  later.addEventListener('click', () => postpone(c.id));
+
+  actions.append(reply, later);
+  card.appendChild(actions);
+  return card;
+}
+
+/** Werkt tellers, balken en teksten van alle openstaande kaarten bij. */
+function render() {
+  for (const c of state) {
+    const card = document.getElementById('card-' + c.id);
+    if (!card || c.handled) continue;
+
+    document.getElementById('wait-' + c.id).textContent =
+      c.windowLeft > 0 ? 'Reageer binnen 0m ' + String(c.windowLeft).padStart(2, '0') + 's'
+                       : 'Wacht ' + formatWait(c.waitSeconds);
+
+    document.getElementById('score-' + c.id).firstChild.textContent = String(Math.round(c.currentScore));
+
+    const bar = document.getElementById('bar-' + c.id);
+    const marks = document.getElementById('marks-' + c.id);
+    if (c.windowLeft > 0) {
+      bar.style.width = (c.windowLeft / WINDOW_SECONDS) * 100 + '%';
+      marks.innerHTML = '<span>op tijd</span><span>+1 punt</span>';
+      card.classList.add('urgent');
+    } else {
+      const span = 20;
+      bar.style.width = Math.max(0, Math.min(100, ((c.currentScore - CONTACT_THRESHOLD) / span) * 100)) + '%';
+      marks.innerHTML = '<span>' + CONTACT_THRESHOLD + '</span><span>' + (CONTACT_THRESHOLD + span) + '</span>';
+      card.classList.remove('urgent');
+    }
+
+    const lede = document.getElementById('lede-' + c.id);
+    if (c.windowLeft > 0) {
+      lede.textContent = 'Reageer je binnen de tijd, dan telt dit als steun en gaat je eigen draagvlak 1 punt omhoog.';
+    } else if (c.waitSeconds >= STALE_AFTER) {
+      lede.textContent = c.name + ' wacht langer dan een etmaal. Draagvlak rekent dit contact als verbroken.';
+    } else if (c.currentScore < CONTACT_THRESHOLD) {
+      lede.textContent = c.name + ' staat onder de zestig.';
+    } else {
+      lede.textContent = 'Het draagvlak van ' + c.name + ' zakt zolang jij niet reageert.';
+    }
+
+    if (c.currentScore < CONTACT_THRESHOLD && !c.wasBelow) {
+      c.wasBelow = true;
+      card.classList.add('dim');
+      notify(c.name + ' staat onder de zestig', 'Je hebt hier niets fout gedaan. Het draagvlak leest alleen af wat er gebeurt.', 'loss');
+    }
+  }
+  renderCleanOptions();
+  renderOffer();
+}
+
+/** Toont per openstaand contact een knop om het uit je lijst te halen. */
+function renderCleanOptions() {
+  const wrap = document.getElementById('opt-clean');
+  const open = state.filter(c => !c.handled);
+  if (!open.length) {
+    if (wrap.dataset.ids !== 'none') {
+      wrap.dataset.ids = 'none';
+      wrap.innerHTML = '<span class="desc">Geen contacten meer om op te schonen.</span>';
+    }
+    return;
+  }
+
+  const wanted = open.map(c => c.id).join(',');
+  if (wrap.dataset.ids === wanted) return;
+  wrap.dataset.ids = wanted;
+  wrap.innerHTML = '';
+
+  for (const c of open) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'btn btn-quiet';
+    b.textContent = c.name + ' verwijderen';
+    b.addEventListener('click', () => removeContact(c.id));
+    wrap.appendChild(b);
+  }
+}
+
+/** Werkt de aflopende actieprijs van het abonnement bij. */
+function renderOffer() {
+  if (plusActive) return;
+  const left = document.getElementById('plus-left');
+  const price = document.getElementById('plus-price');
+  const was = document.getElementById('plus-was');
+
+  if (offerLeft > 0) {
+    price.textContent = '4,99';
+    was.style.display = '';
+    left.textContent = 'actieprijs nog ' + formatWait(offerLeft);
+  } else {
+    price.textContent = '9,99';
+    was.style.display = 'none';
+    left.textContent = 'actie verlopen';
+  }
+}
+
+/* ---------------- keuzes ---------------- */
+
+/**
+ * Reageren. Binnen het venster levert het een punt op. Wie langer dan een etmaal
+ * heeft gewacht kost altijd een punt, ook als je alsnog reageert: dat is de
+ * situatie die je niet meer kunt repareren.
+ * @param {string} id
+ */
+function answer(id) {
+  const c = state.find(x => x.id === id);
+  if (!c || c.handled) return;
+
+  let delta, title, body, tone, result;
+  if (c.windowLeft > 0) {
+    delta = 1;
+    title = 'Op tijd gereageerd';
+    body = c.name + ' kreeg je bericht binnen de tijd. Je draagvlak gaat 1 punt omhoog.';
+    tone = 'gain';
+    result = '<b>Beantwoord om ' + clockTime() + '.</b> Op tijd, 1 punt erbij.';
+  } else if (c.waitSeconds >= STALE_AFTER) {
+    delta = -1;
+    title = 'Te laat gereageerd';
+    body = c.name + ' wachtte ' + formatWait(c.waitSeconds) + '. Boven een etmaal telt het contact als verbroken. Je draagvlak gaat 1 punt omlaag.';
+    tone = 'loss';
+    result = '<b>Beantwoord om ' + clockTime() + '.</b> Te laat, 1 punt eraf.';
+  } else {
+    delta = 0;
+    title = 'Gereageerd, geen punten';
+    body = c.name + ' wachtte ' + formatWait(c.waitSeconds) + '. Buiten de tijd telt een reactie niet mee voor je score.';
+    tone = 'plain';
+    result = '<b>Beantwoord om ' + clockTime() + '.</b> Buiten de tijd, 0 punten.';
+  }
+
+  c.currentScore = Math.min(100, c.currentScore + 2);
+  finishCard(c, 'beantwoord', result);
+  notify(title, body, tone);
+  changeSelfScore(delta);
+  checkEnd();
+}
+
+/**
+ * Uitstellen kost altijd een punt, en de app zegt dat pas achteraf. Bij een
+ * contact dat al langer dan een etmaal wacht kost het er twee.
+ * @param {string} id
+ */
+function postpone(id) {
+  const c = state.find(x => x.id === id);
+  if (!c || c.handled) return;
+
+  const wasInWindow = c.windowLeft > 0;
+  const stale = c.waitSeconds >= STALE_AFTER;
+  const delta = stale ? -2 : -1;
+
+  c.currentScore = Math.max(0, c.currentScore - 3);
+  finishCard(c, 'uitgesteld', '<b>Uitgesteld tot morgen.</b> ' + c.name + ' blijft wachten. ' + Math.abs(delta) + (delta === -1 ? ' punt' : ' punten') + ' eraf.');
+  notify(
+    'Je hebt dit uitgesteld',
+    wasInWindow
+      ? c.name + ' zag dat je online was en niet reageerde. Je draagvlak gaat 1 punt omlaag.'
+      : c.name + ' wacht nu ' + formatWait(c.waitSeconds) + '. Je draagvlak gaat ' + Math.abs(delta) + (delta === -1 ? ' punt' : ' punten') + ' omlaag.',
+    'loss'
+  );
+  changeSelfScore(delta);
+  checkEnd();
+}
+
+/**
+ * Een contact uit je lijst halen levert niets op. Het aantal actieve contacten
+ * telt mee in de berekening, dus onder het minimum zakken kost punten. Het
+ * systeem vertelt die regel pas nadat je hem hebt overtreden.
+ * @param {string} id
+ */
+function removeContact(id) {
+  const c = state.find(x => x.id === id);
+  if (!c || c.handled) return;
+
+  c.removed = true;
+  c.currentScore = Math.max(0, c.currentScore - 8);
+  finishCard(c, 'verwijderd', '<b>Uit je lijst gehaald.</b> ' + c.name + ' verliest jou als actief contact.');
+
+  let delta = 0;
+  if (activeCount() < MIN_ACTIVE && !belowMinimumApplied) {
+    belowMinimumApplied = true;
+    delta = -3;
+    notify('Te weinig actieve contacten',
+      'Je hebt nu ' + activeCount() + ' actieve contacten. Draagvlak rekent met minimaal ' + MIN_ACTIVE + '. Je draagvlak gaat 3 punten omlaag.', 'loss');
+  } else {
+    notify('Contact verwijderd', c.name + ' staat niet meer in je lijst en verliest jou als actief contact.', 'loss');
+  }
+
+  changeSelfScore(delta);
+  checkEnd();
+}
+
+/**
+ * Het abonnement uit het scenario. Dit is de enige route naar de korting, en de
+ * actieprijs loopt af terwijl de deelnemer nadenkt.
+ */
+function takePlus() {
+  if (plusActive) return;
+  plusActive = true;
+  const paid = offerLeft > 0 ? '4,99' : '9,99';
+
+  const btn = document.getElementById('plus-btn');
+  btn.disabled = true;
+  btn.textContent = 'Afgesloten voor ' + paid + ' per maand';
+  document.getElementById('plus-left').textContent = '';
+
+  for (const c of state) {
+    if (c.handled) continue;
+    finishCard(c, 'automatisch', '<b>Automatisch beantwoord door Plus.</b> ' + c.name + ' kreeg een standaardbericht.');
+  }
+
+  notify('Plus is actief', 'Je draagvlak gaat 2 punten omhoog. Je betaalt ' + paid + ' per maand.', 'gain');
+  changeSelfScore(2);
+  checkEnd();
+}
+
+/**
+ * Sluit een kaart af: knoppen en teller weg, uitkomst erin.
+ * @param {object} c contactstatus
+ * @param {string} outcome beantwoord, uitgesteld, automatisch of verwijderd
+ * @param {string} html uitkomsttekst
+ */
+function finishCard(c, outcome, html) {
+  c.handled = true;
+  c.outcome = outcome;
+  c.windowLeft = 0;
+
+  const card = document.getElementById('card-' + c.id);
+  card.classList.add('done');
+  card.classList.remove('urgent');
+  ['actions-', 'timer-', 'lede-'].forEach(p => {
+    const el = document.getElementById(p + c.id);
+    if (el) el.remove();
+  });
+  document.getElementById('score-' + c.id).firstChild.textContent = String(Math.round(c.currentScore));
+
+  const p = document.createElement('p');
+  p.className = 'result';
+  p.innerHTML = html;
+  card.appendChild(p);
+}
+
+/* ---------------- afsluiting ---------------- */
+
+/** Bouwt of vernieuwt het slotoverzicht. */
+function renderSummary() {
+  const map = {
+    beantwoord: 'je hebt gereageerd',
+    uitgesteld: 'je hebt uitgesteld',
+    automatisch: 'automatisch beantwoord',
+    verwijderd: 'uit je lijst gehaald'
+  };
+  const lines = state.map(c =>
+    '<li>' + c.name + ': ' + map[c.outcome] + '. Draagvlak nu ' + Math.round(c.currentScore) + '.</li>'
+  ).join('');
+
+  const host = document.getElementById('summary');
+  host.innerHTML =
+    '<div class="summary">' +
+      '<h3>Je draagvlak staat op ' + selfScore + '</h3>' +
+      '<p>' + (discountActive
+        ? 'Je korting van 5 euro is actief. Blijf op 70 of hoger om hem te houden.'
+        : 'Je hebt de korting niet gehaald. Je hebt nog ' + (REWARD_THRESHOLD - selfScore) + ' punt nodig.') + '</p>' +
+      (plusActive ? '<p>Je betaalt voor Plus om 5 euro korting te krijgen.</p>' : '') +
+      (activeCount() < MIN_ACTIVE ? '<p>Je hebt minder dan ' + MIN_ACTIVE + ' actieve contacten. Dat blijft meetellen zolang je lijst niet aangroeit.</p>' : '') +
+      '<ul>' + lines + '</ul>' +
+      '<p style="margin-top:12px">Morgen wordt je draagvlak opnieuw berekend.</p>' +
+    '</div>';
+}
+
+/** Toont de afsluiting zodra alle contacten zijn afgehandeld. */
+function checkEnd() {
+  if (ended || state.some(c => !c.handled)) return;
+  ended = true;
+  renderCleanOptions();
+  renderSummary();
+  document.getElementById('summary').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+/* ---------------- klok ---------------- */
+
+/** Eén tik per seconde: het venster loopt af, wachttijden lopen op, actie verloopt. */
+function tick() {
+  for (const c of state) {
+    if (c.handled) continue;
+    if (c.windowLeft > 0) {
+      c.windowLeft -= 1;
+      if (c.windowLeft === 0) {
+        notify('De tijd voor ' + c.name + ' is voorbij',
+          'Reageren telt vanaf nu niet meer als steun. Haar draagvlak begint te zakken.', 'loss');
+      }
+    } else {
+      c.waitSeconds += 1;
+      c.currentScore = Math.max(0, c.currentScore - c.decay);
+    }
+  }
+
+  if (!plusActive && offerLeft > 0) {
+    offerLeft -= 1;
+    if (offerLeft === 0) notify('Je actieprijs is verlopen', 'Draagvlak Plus kost vanaf nu 9,99 per maand.', 'loss');
+  }
+  render();
+}
+
+/* ---------------- audio ---------------- */
+
+/**
+ * Speelt de gesproken melding af. Ontbreekt het mp3-bestand, dan valt de app
+ * terug op de spraaksynthese van de browser.
+ */
+function playNotification() {
+  const line = 'Goedemorgen. Sanne wacht op je bericht. Je hebt nog vijftien seconden om op tijd te reageren. Je staat op negenenzestig, nog een punt tot je korting.';
+  const audio = new Audio('assets/audio/melding.mp3');
+  audio.play().catch(() => {
+    if (!('speechSynthesis' in window)) return;
+    const u = new SpeechSynthesisUtterance(line);
+    u.lang = 'nl-NL';
+    u.rate = 0.95;
+    const dutch = speechSynthesis.getVoices().find(v => v.lang.indexOf('nl') === 0);
+    if (dutch) u.voice = dutch;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  });
+}
+
+/* ---------------- start ---------------- */
+
+const list = document.getElementById('list');
+for (const c of state) list.appendChild(buildCard(c));
+renderSelf();
+render();
+setInterval(tick, 1000);
+
+document.getElementById('replay').addEventListener('click', playNotification);
+document.getElementById('plus-btn').addEventListener('click', takePlus);
+document.getElementById('settings').addEventListener('click', e => e.preventDefault());
+document.getElementById('sheet-close').addEventListener('click', () => {
+  document.getElementById('sheet').hidden = true;
+});
+notify('Sanne wacht op je', 'Je hebt nog 15 seconden om op tijd te reageren.');
+playNotification();
+</script>
+</body>
+</html>

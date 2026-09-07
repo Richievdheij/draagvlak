@@ -12,9 +12,11 @@ export default [
             ecmaVersion: 2024,
             sourceType: 'module',
             globals: {
+                clearInterval: 'readonly',
                 console: 'readonly',
                 document: 'readonly',
                 localStorage: 'readonly',
+                setInterval: 'readonly',
                 window: 'readonly',
             },
         },

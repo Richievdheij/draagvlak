@@ -1,0 +1,170 @@
+/*
+ * Design tokens.
+ *
+ * The only file that holds a colour, a size, a font or a radius. A literal hex
+ * code or pixel value anywhere else is a bug: change a value here and the whole
+ * app follows.
+ *
+ * Three layers, and you almost always want the middle one:
+ *
+ *   1. Primitives  --mint-600, --paper-100. The raw palette. Never used in a
+ *      component, only to build the layer below.
+ *   2. Semantic    --color-surface, --color-accent. What a thing is for. This is
+ *      what you write in a component file.
+ *   3. Component   set inside a component itself, for example --card-padding.
+ *
+ * Light and dark come from light-dark(): the first value is light, the second
+ * is dark, and the browser picks one based on color-scheme. That is why there
+ * is no second copy of the palette.
+ */
+
+:root {
+    /* ---- 1. Primitives: paper and ink -------------------------------- */
+    --paper-0: #ffffff;
+    --paper-50: #f7faf8;
+    --paper-100: #f2f6f3;
+    --paper-200: #efede8;
+
+    --line-200: #dfe6e1;
+    --line-300: #dad5cb;
+
+    --ink-900: #25302b;
+    --ink-600: #5c6862;
+    --ink-400: #8b958f;
+
+    /* Dark surfaces and the text that sits on them. */
+    --night-900: #0f1613;
+    --night-800: #16201c;
+    --night-700: #1e2a25;
+    --night-600: #2a3833;
+    --night-500: #33423c;
+    --mist-100: #e7efea;
+    --mist-300: #a3b0aa;
+    --mist-500: #7e8b85;
+
+    /* ---- 1. Primitives: the institution ------------------------------ */
+    /* Mint is the colour of the system itself: the wordmark, buttons, the
+       meter. It is friendly on purpose, because a scoring app that looked
+       threatening would not be believable. */
+    --mint-700: #26674e;
+    --mint-600: #2f7d5e;
+    --mint-300: #8fcdb2;
+    --mint-100: #dcebe3;
+    --mint-shade: #1b2f27;
+
+    /* Losing points is never red here: it goes quiet and beige instead. Red is
+       kept for a form that is actually wrong. */
+    --clay-600: #a2503f;
+    --clay-300: #e09383;
+    --clay-100: #f6e7e3;
+    --clay-shade: #33201c;
+
+    /* ---- 2. Semantic: colour ----------------------------------------- */
+    color-scheme: light dark;
+
+    --color-background: light-dark(var(--paper-100), var(--night-900));
+    --color-surface: light-dark(var(--paper-0), var(--night-800));
+    --color-surface-muted: light-dark(var(--paper-200), var(--night-700));
+
+    --color-text: light-dark(var(--ink-900), var(--mist-100));
+    --color-text-soft: light-dark(var(--ink-600), var(--mist-300));
+    --color-text-faint: light-dark(var(--ink-400), var(--mist-500));
+
+    --color-border: light-dark(var(--line-200), var(--night-600));
+    --color-border-muted: light-dark(var(--line-300), var(--night-500));
+
+    --color-accent: light-dark(var(--mint-600), var(--mint-300));
+    --color-accent-hover: light-dark(var(--mint-700), #a9dcc3);
+    --color-accent-soft: light-dark(var(--mint-100), var(--mint-shade));
+    --color-on-accent: light-dark(var(--paper-0), var(--night-900));
+
+    --color-danger: light-dark(var(--clay-600), var(--clay-300));
+    --color-danger-soft: light-dark(var(--clay-100), var(--clay-shade));
+
+    --color-focus: light-dark(var(--mint-600), var(--mint-300));
+
+    /* ---- 2. Semantic: type ------------------------------------------- */
+    /* Outfit says what a thing is called: the wordmark, headings, the number.
+       Inter is everything you read as a sentence. */
+    --font-display: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+    --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    --font-mono: ui-monospace, 'SFMono-Regular', 'Consolas', monospace;
+
+    /* The score is the only loud thing on the screen and grows with the
+       viewport; everything else has a fixed size. */
+    --text-score: clamp(3rem, 2.5rem + 2vw, 3.75rem);
+    --text-2xl: 1.625rem;
+    --text-xl: 1.375rem;
+    --text-lg: 1.0625rem;
+    --text-md: 1rem;
+    --text-sm: 0.875rem;
+    --text-xs: 0.8125rem;
+    --text-2xs: 0.75rem;
+
+    --leading-tight: 1.1;
+    --leading-snug: 1.35;
+    --leading-normal: 1.5;
+
+    --tracking-tight: -0.01em;
+    --tracking-wide: 0.06em;
+
+    --weight-regular: 400;
+    --weight-medium: 500;
+    --weight-semibold: 600;
+
+    /* ---- 2. Semantic: space ------------------------------------------ */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.375rem;
+    --space-6: 1.75rem;
+    --space-7: 2.5rem;
+    --space-8: 3.5rem;
+    --space-9: 5rem;
+
+    /* ---- 2. Semantic: shape ------------------------------------------ */
+    /* Soft and rounded: it has to feel like an app you already have on your
+       phone. Depth comes from a hairline or a ring, never from a drop shadow. */
+    --radius-xs: 3px;
+    --radius-sm: 14px;
+    --radius-md: 20px;
+    --radius-lg: 24px;
+    --radius-pill: 999px;
+
+    --border-hairline: 1px solid var(--color-border);
+    --border-muted: 1px solid var(--color-border-muted);
+    --ring-accent: 0 0 0 3px var(--color-accent-soft);
+
+    /* ---- 2. Semantic: layout ----------------------------------------- */
+    /* One column, phone width, centred on a laptop. It should read as an app,
+       not as a website that was squeezed. */
+    --width-app: 27rem;
+    --width-prose: 60ch;
+    --gutter: 1.25rem;
+    --header-height: 3.75rem;
+
+    /* ---- 2. Semantic: motion ----------------------------------------- */
+    --transition-fast: 120ms ease-out;
+    --transition-slow: 450ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+/*
+ * The theme switch. Without an attribute the browser decides, which is what
+ * most people want; the toggle in the footer writes one of these instead.
+ */
+[data-theme='light'] {
+    color-scheme: light;
+}
+
+[data-theme='dark'] {
+    color-scheme: dark;
+}
+
+/* Motion off is an accessibility requirement, not a nicety. */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --transition-fast: 0ms;
+        --transition-slow: 0ms;
+    }
+}

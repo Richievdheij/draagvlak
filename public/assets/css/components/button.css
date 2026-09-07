@@ -1,0 +1,70 @@
+/*
+ * Buttons and links that act like one.
+ *
+ * Three kinds, and that is the whole set: the choice the app wants you to make,
+ * the one it will accept, and the quiet one it hopes you skip.
+ */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: 2.75rem;
+    padding: var(--space-3) var(--space-4);
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        background-color var(--transition-fast),
+        border-color var(--transition-fast);
+}
+
+.btn:hover {
+    background-color: var(--color-accent-hover);
+    color: var(--color-on-accent);
+}
+
+.btn--secondary {
+    background-color: transparent;
+    border-color: var(--color-border);
+    color: var(--color-text-soft);
+    font-weight: var(--weight-medium);
+}
+
+.btn--secondary:hover {
+    background-color: transparent;
+    border-color: var(--color-text-faint);
+    color: var(--color-text-soft);
+}
+
+/* The way out is always the quietest button on the screen. That is not
+   sloppiness, it is the subject of this prototype. */
+.btn--quiet {
+    background-color: transparent;
+    border-color: var(--color-border-muted);
+    color: var(--color-text-faint);
+    font-weight: var(--weight-regular);
+}
+
+.btn--quiet:hover {
+    background-color: transparent;
+    border-color: var(--color-text-faint);
+    color: var(--color-text-soft);
+}
+
+.btn--block {
+    width: 100%;
+}
+
+.btn[disabled],
+.btn[aria-disabled='true'] {
+    opacity: 0.5;
+    cursor: default;
+}

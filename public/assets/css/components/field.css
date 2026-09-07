@@ -1,0 +1,52 @@
+/*
+ * One form field: label, input, hint, error.
+ *
+ * Every input has a label. Not a placeholder that disappears the moment you
+ * start typing, an actual label.
+ */
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.field__label {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+}
+
+/* Stays at 1rem: anything smaller makes iOS zoom in when the field is tapped. */
+.field__input {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: var(--space-3) var(--space-4);
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    border: var(--border-hairline);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-md);
+    transition: border-color var(--transition-fast);
+}
+
+.field__input:hover {
+    border-color: var(--color-border-muted);
+}
+
+.field__input[aria-invalid='true'] {
+    border-color: var(--color-danger);
+}
+
+.field__input::placeholder {
+    color: var(--color-text-faint);
+}
+
+.field__hint {
+    color: var(--color-text-faint);
+    font-size: var(--text-xs);
+}
+
+.field__error {
+    color: var(--color-danger);
+    font-size: var(--text-xs);
+}

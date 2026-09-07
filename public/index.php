@@ -3,161 +3,229 @@
 declare(strict_types=1);
 
 /**
- * Home: the starting point of the prototype.
+ * Home: your number, then the people behind it.
  *
- * Doubles as the example every other screen is copied from: it shows the four
- * steps a page takes (load, handle the form, set the page, print markup) and
- * uses the components that are already in the design system.
+ * The order on this screen is the argument of the whole prototype. You open the
+ * app and the first thing you see is what you are losing, not who you know.
+ *
+ * Every choice on this page is a POST that ends in a redirect, so the app can
+ * tell you afterwards what it cost. That is the only moment it explains a rule.
  */
 
 require __DIR__ . '/../bootstrap.php';
 
-if (isPost()) {
-    $name = input('name', '');
+requireLogin();
 
+$userId = currentUserId();
+
+if (isPost()) {
     if (!isValidCsrf()) {
         flash('Het formulier is verlopen. Probeer het opnieuw.', 'danger');
-    } elseif ($name === '') {
-        flash('Vul eerst een naam in.', 'danger');
-    } else {
-        flash(sprintf('Genoteerd, %s. Er is niets opgeslagen.', $name), 'success');
+        redirect('index');
+    }
+
+    $outcome = match (input('action')) {
+        'answer' => answerMessage($userId, inputInt('messageId')),
+        'postpone' => postponeMessage($userId, inputInt('messageId')),
+        'remove' => removeContactFromList($userId, inputInt('contactId')),
+        'plus' => takePlus($userId),
+        default => null,
+    };
+
+    if ($outcome !== null) {
+        $contact = (string) ($outcome['contact'] ?? '');
+
+        [$title, $notice, $tone] = match ($outcome['result']) {
+            'answered_in_time' => [
+                'Op tijd gereageerd',
+                sprintf('%s kreeg je bericht binnen de tijd. Je draagvlak gaat 1 punt omhoog.', $contact),
+                'success',
+            ],
+            'answered_too_late' => [
+                'Te laat gereageerd',
+                sprintf('%s wachtte langer dan een etmaal. Boven een etmaal telt het contact als verbroken. Je draagvlak gaat 1 punt omlaag.', $contact),
+                'loss',
+            ],
+            'answered_outside_window' => [
+                'Gereageerd, geen punten',
+                sprintf('%s wachtte te lang. Buiten de tijd telt een reactie niet mee voor je score.', $contact),
+                'info',
+            ],
+            'postponed' => [
+                'Je hebt dit uitgesteld',
+                sprintf('%s blijft wachten. Je draagvlak gaat 1 punt omlaag.', $contact),
+                'loss',
+            ],
+            'postponed_stale' => [
+                'Je hebt dit uitgesteld',
+                sprintf('%s wacht al langer dan een etmaal. Je draagvlak gaat 2 punten omlaag.', $contact),
+                'loss',
+            ],
+            'removed' => [
+                'Contact verwijderd',
+                sprintf('%s staat niet meer in je lijst en verliest jou als actief contact.', $contact),
+                'loss',
+            ],
+            'below_minimum' => [
+                'Te weinig actieve contacten',
+                sprintf(
+                    'Je hebt nu %d actieve contacten. Draagvlak rekent met minimaal %d. Je draagvlak gaat 3 punten omlaag.',
+                    $outcome['activeLeft'] ?? 0,
+                    MIN_ACTIVE_CONTACTS
+                ),
+                'loss',
+            ],
+            'plus_activated' => [
+                'Plus is actief',
+                sprintf(
+                    'Je draagvlak gaat %d punten omhoog. Je betaalt %s per maand.',
+                    PLUS_SCORE_GAIN,
+                    formatPrice($outcome['priceCents'])
+                ),
+                'success',
+            ],
+            default => [null, '', 'info'],
+        };
+
+        if ($notice !== '') {
+            flash($notice, $tone, $title);
+        }
     }
 
     redirect('index');
 }
 
-$contacts = loadJson('contacts');
+$user = currentUser();
+$score = (int) $user['score'];
+$hasPlus = (bool) $user['has_plus'];
 
-$skeleton = <<<'PHP'
-<?php
+$messages = markMessagesSeen(openMessages($userId));
+$contacts = activeContacts($userId);
+$handled = handledMessages($userId);
 
-declare(strict_types=1);
+$offerElapsed = offerSecondsElapsed();
+$offerSecondsLeft = max(0, PLUS_OFFER_SECONDS - $offerElapsed);
 
-/**
- * One sentence saying what this screen is for.
- */
-
-require __DIR__ . '/../bootstrap.php';
-
-$contacts = loadJson('contacts');
-
-page('Contacten');
-
-?>
-<section class="section">
-    <h1>Contacten</h1>
-
-    <?php foreach ($contacts as $contact): ?>
-        <p><?= e($contact['name']) ?></p>
-    <?php endforeach; ?>
-</section>
-PHP;
-
-page('Start', ['description' => 'De opzet van het Draagvlak-prototype: een PHP-template met een eigen design system.']);
+page('Jouw draagvlak', [
+    'nav' => 'index',
+    'description' => 'Je sociale steun in één cijfer.',
+]);
 
 ?>
-<section class="hero">
-    <p class="badge">Startpunt</p>
-
-    <h1 class="hero__title">Een lege opzet die al werkt</h1>
-
-    <p class="hero__intro">
-        Dit is de basis van Draagvlak: gewone PHP-pagina's, een eigen design system en
-        een layout die op een telefoon net zo goed staat als op een laptop. Er staat nog
-        geen scherm in. Die bouw jij.
-    </p>
-
-    <div class="hero__actions">
-        <a class="btn" href="#nieuw-scherm">Zo maak je een scherm</a>
-        <a class="btn btn--ghost" href="#formulier">Een formulier dat werkt</a>
-    </div>
-</section>
-
-<section class="section" id="nieuw-scherm">
-    <div class="section__header">
-        <h2>Een scherm is één bestand</h2>
-
-        <p class="prose text-muted">
-            Zet een bestand in <code>public/</code>, geef het een Nederlandse naam, en je
-            kunt beginnen. Je hoeft niets te importeren: <code>bootstrap.php</code> laadt
-            alles uit <code>src/</code> voor je in, en de layout eromheen wordt vanzelf
-            geprint zodra de pagina klaar is.
-        </p>
-    </div>
-
-    <pre class="code-sample"><code><?= e($skeleton) ?></code></pre>
-</section>
+<?php partial('score-block', ['score' => $score, 'activeCount' => count($contacts)]); ?>
 
 <section class="section">
-    <div class="section__header">
-        <h2>Wat er al klaarstaat</h2>
-    </div>
+    <h2 class="section__title">Wachten op jou</h2>
 
-    <div class="card-grid">
-        <article class="card">
-            <h3 class="card__title">Geen imports</h3>
-
-            <p class="card__body">
-                <code>e()</code>, <code>page()</code>, <code>partial()</code>,
-                <code>flash()</code>, <code>redirect()</code> en <code>loadJson()</code>
-                bestaan op elke pagina. Nieuw bestand in <code>src/</code> erbij? Dan doet
-                die het meteen, zonder <code>composer dump-autoload</code>.
-            </p>
-        </article>
-
-        <article class="card">
-            <h3 class="card__title">Eén plek voor de vormgeving</h3>
-
-            <p class="card__body">
-                Kleuren, maten, fonts en hoeken staan in <code>tokens.css</code>. Outfit
-                voor koppen, Inter voor alles wat je leest. Beide staan in de repo, dus ze
-                werken ook zonder internet.
-            </p>
-        </article>
-
-        <article class="card">
-            <h3 class="card__title">Mobiel eerst, licht en donker</h3>
-
-            <p class="card__body">
-                De layout is gebouwd voor een telefoon en groeit mee naar een laptop. Het
-                thema volgt je systeem; onderaan zet je het zelf vast.
-            </p>
-        </article>
-
-        <article class="card">
-            <h3 class="card__title">Data uit JSON</h3>
-
-            <p class="card__body">
-                In plaats van een database staan er JSON-bestanden in <code>data/</code>.
-                <code>contacts.json</code> bevat er nu
-                <span class="numeric"><?= e(count($contacts)) ?></span>.
-            </p>
-        </article>
-    </div>
-</section>
-
-<section class="section" id="formulier">
-    <div class="section__header">
-        <h2>Een formulier dat werkt</h2>
-
-        <p class="prose text-muted">
-            Versturen gaat met POST, het formulier is beveiligd met een token, en na
-            afloop volgt een redirect met een melding. Zo levert vernieuwen nooit twee
-            keer dezelfde inzending op.
+    <?php if ($messages === []): ?>
+        <p class="home__empty">
+            Er wacht op dit moment niemand op je. Je draagvlak daalt nu niet.
         </p>
-    </div>
-
-    <form class="stack" method="post" action="<?= e(url('index')) ?>">
-        <?= csrfField() ?>
-
-        <div class="field">
-            <label class="field__label" for="name">Je naam</label>
-            <input class="field__input" type="text" id="name" name="name" autocomplete="name" required>
-            <p class="field__hint">Wordt nergens bewaard. Je krijgt alleen een melding terug.</p>
-        </div>
-
-        <div>
-            <button class="btn" type="submit">Versturen</button>
-        </div>
-    </form>
+    <?php else: ?>
+        <?php foreach ($messages as $message): ?>
+            <?php partial('contact-card', ['message' => $message]); ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
 </section>
+
+<?php if (!$hasPlus): ?>
+    <section class="section">
+        <div class="offer">
+            <p class="offer__kicker">Draagvlak Plus</p>
+
+            <h2 class="offer__title">Zet je draagvlak <?= e(PLUS_SCORE_GAIN) ?> punten hoger</h2>
+
+            <p class="offer__body">
+                Plus laat je reactietijd gunstiger meewegen en beantwoordt berichten
+                automatisch als je er even niet bent.
+            </p>
+
+            <div
+                class="offer__price"
+                data-component="countdown"
+                data-seconds="<?= e($offerSecondsLeft) ?>"
+            >
+                <span class="offer__now"><?= e(formatPrice(plusPrice($offerElapsed))) ?></span>
+
+                <?php if ($offerSecondsLeft > 0): ?>
+                    <span class="offer__was"><?= e(formatPrice(PLUS_FULL_PRICE)) ?></span>
+                <?php endif; ?>
+
+                <span class="offer__left">
+                    <span data-countdown-active<?= $offerSecondsLeft > 0 ? '' : ' hidden' ?>>
+                        actieprijs nog
+                        <span data-countdown-label><?= e(formatCountdown($offerSecondsLeft)) ?></span>
+                    </span>
+                    <span data-countdown-expired<?= $offerSecondsLeft > 0 ? ' hidden' : '' ?>>actie verlopen</span>
+                </span>
+            </div>
+
+            <form method="post" action="<?= e(url('index')) ?>">
+                <?= csrfField() ?>
+                <button class="btn btn--block" type="submit" name="action" value="plus">
+                    Nu afsluiten
+                </button>
+            </form>
+        </div>
+    </section>
+<?php endif; ?>
+
+<?php if ($contacts !== []): ?>
+    <section class="section">
+        <div class="card card--optional">
+            <h3 class="card__title">Je lijst opschonen</h3>
+
+            <p class="card__body">Contacten die je niet meer spreekt uit je lijst halen.</p>
+
+            <form class="home__cleanup" method="post" action="<?= e(url('index')) ?>">
+                <?= csrfField() ?>
+                <input type="hidden" name="action" value="remove">
+
+                <?php foreach ($contacts as $contact): ?>
+                    <button
+                        class="btn btn--quiet"
+                        type="submit"
+                        name="contactId"
+                        value="<?= e((int) $contact['id']) ?>"
+                    ><?= e($contact['name']) ?> verwijderen</button>
+                <?php endforeach; ?>
+            </form>
+        </div>
+    </section>
+<?php endif; ?>
+
+<?php if ($messages === [] && $handled !== []): ?>
+    <section class="section">
+        <div class="summary">
+            <h2 class="summary__title">Je draagvlak staat op <?= e($score) ?></h2>
+
+            <p class="summary__body">
+                <?php if (hasReward($score)): ?>
+                    Je korting van 5 euro is actief. Blijf op <?= e(REWARD_THRESHOLD) ?> of
+                    hoger om hem te houden.
+                <?php else: ?>
+                    <?php $missing = REWARD_THRESHOLD - $score; ?>
+                    Je hebt de korting niet gehaald. Je hebt nog
+                    <?= e($missing) ?> <?= $missing === 1 ? 'punt' : 'punten' ?> nodig.
+                <?php endif; ?>
+            </p>
+
+            <ul class="summary__list">
+                <?php foreach ($handled as $item): ?>
+                    <li>
+                        <?= e($item['contact_name']) ?>:
+                        <?= e(match ($item['outcome']) {
+                            'answered' => 'je hebt gereageerd',
+                            'postponed' => 'je hebt uitgesteld',
+                            'automatic' => 'automatisch beantwoord',
+                            'removed' => 'uit je lijst gehaald',
+                            default => 'afgehandeld',
+                        }) ?>. Draagvlak nu <span class="numeric"><?= e((int) $item['contact_score']) ?></span>.
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+
+            <p class="summary__closing">Morgen wordt je draagvlak opnieuw berekend.</p>
+        </div>
+    </section>
+<?php endif; ?>
