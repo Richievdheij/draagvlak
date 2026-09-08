@@ -2,24 +2,15 @@
 
 declare(strict_types=1);
 
+use Draagvlak\Features\Reset\Pages\ResetPage;
+
 /**
- * Reset between two participants.
+ * Start over between two participants.
  *
- * Empty on purpose. The screen and its stylesheet in assets/css/pages/reset.css
- * are ready; the content is yours to build.
- *
- * Two things already exist to start over: uitloggen.php clears the session, and
- * "composer db:fresh" puts the messages and the scores back to their starting
- * position for everybody.
+ * The URL, and nothing else. What it does is in src/Features/Reset/Pages/ResetPage.php
+ * and what it looks like is in views/features/reset/reset.php.
  */
 
-require __DIR__ . '/../bootstrap.php';
+$app = require __DIR__ . '/../bootstrap.php';
 
-requireLogin();
-
-page('Opnieuw beginnen');
-
-?>
-<section class="section">
-    <h1>Opnieuw beginnen</h1>
-</section>
+(new ResetPage($app))->handle();

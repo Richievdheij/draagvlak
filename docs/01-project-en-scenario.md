@@ -41,10 +41,15 @@ De deelnemer is Sam Vermeer, 22 jaar, net verhuisd voor een stage. Het cijfer st
 69, negen punten lager dan voor de verhuizing, en één punt onder de zeventig waarboven
 de zorgverzekeraar vijf euro korting geeft. Drie mensen wachten op antwoord.
 
-Die opzet staat in `data/user.json` en `data/messages.json` en is met opzet zo gekozen:
-één punt onder een grens is de plek waar het systeem zich het scherpst laat voelen. Pas
-die startwaarde niet aan zonder het met het team te overleggen, want alle testsessies
-moeten met dezelfde stand beginnen.
+Het beginpunt staat in `src/Features/Score/ScoreRules.php` en de drie mensen in
+`data/scenario.json`. Die opzet is met opzet zo gekozen: één punt onder een grens is de
+plek waar het systeem zich het scherpst laat voelen. Pas die startwaarde niet aan zonder
+het met het team te overleggen, want alle testsessies moeten met dezelfde stand beginnen.
+
+Een deelnemer die zelf een account aanmaakt begint op hetzelfde cijfer, maar met een lege
+lijst en een eigen code. Wie elkaar wil zien, vult elkaars code in. Alleen het
+demo-account krijgt de drie mensen uit `data/scenario.json`, zodat je het startscherm
+kunt laten zien zonder eerst iemand uit te nodigen.
 
 ## De schermen en wat ze moeten doen
 
@@ -54,8 +59,10 @@ maar met wat je kwijt bent.
 Een gesprek toont het bericht met een klok die loopt en een aftrek die oploopt. De
 deelnemer kiest een antwoord of laat het liggen, en beide kosten iets.
 
-Contacten staan gesorteerd op traagheid, met de traagste bovenaan en in het rood. Wie
-ziek is of voor een ander zorgt, ziet er hier uit als een slechte investering.
+Contacten staan gesorteerd op traagheid, met de traagste bovenaan. Wie ziek is of voor
+een ander zorgt, ziet er hier uit als een slechte investering. Bovenaan staat je eigen
+code: je lijst begint pas als iemand die invult, en dat is precies wat het systeem van je
+vraagt.
 
 Noodcontacten laten wederkerigheid zien als punten. Naast elk contact staat wat het
 oplevert, en er staat een melding dat iemand je van zijn lijst heeft gehaald.

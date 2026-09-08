@@ -2,15 +2,23 @@
 /vendor/
 /node_modules/
 
-# Editor and operating system leftovers.
+# Operating system leftovers.
 .DS_Store
 .idea/
-.vscode/
 *.swp
 
-# Local overrides and logs. Your database password lives in config.local.php
-# and stays on your own machine.
+# Editor settings are shared, so only the two files the team agreed on are kept.
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Local overrides, caches and logs. Your database password lives in
+# config.local.php and stays on your own machine.
 config.local.php
 .env
 .env.local
 *.log
+.php-cs-fixer.cache
+
+# Persoonlijke skills van je eigen installatie horen niet bij dit project.
+.claude/skills/brainstorm/

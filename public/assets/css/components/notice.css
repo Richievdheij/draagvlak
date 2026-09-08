@@ -32,3 +32,13 @@
     background-color: var(--color-danger-soft);
     border-color: var(--color-danger);
 }
+
+/* Where the queued messages sit: the first thing under the header, because the
+   app only tells you what a choice cost after you made it. */
+.notices {
+    margin-block-end: var(--space-5);
+}
+
+.notices > * + * {
+    margin-block-start: var(--space-3);
+}

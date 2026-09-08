@@ -4,12 +4,39 @@ Iedereen in het team gebruikt iets anders, en dat hoeft niet gelijkgetrokken te 
 Wat wel moet: het model moet de afspraken van deze repo kennen, anders krijg je
 antwoorden die hier niet passen.
 
-## In de editor
+## Wat welk model leest
 
-Werk je met Claude Code, Copilot, Cursor of Gemini CLI, dan hoef je niets te doen. Die
-lezen `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` of `.github/copilot-instructions.md` vanzelf
-uit de repo. `AGENTS.md` is de bron; de andere drie verwijzen daarnaar en voegen alleen
-tool-specifieke dingen toe.
+`AGENTS.md` is de bron. De andere bestanden verwijzen daarnaar en voegen alleen
+tool-specifieke dingen toe. Dit is wat elk model echt uit de repo oppikt:
+
+| Tool                                    | Leest                                                           |
+| --------------------------------------- | --------------------------------------------------------------- |
+| Claude Code                             | `CLAUDE.md` en `AGENTS.md`, plus de skills in `.claude/skills/` |
+| GitHub Copilot                          | `.github/copilot-instructions.md`                               |
+| Gemini CLI                              | `GEMINI.md`                                                     |
+| Cursor, Codex en andere agents          | `AGENTS.md`                                                     |
+| ChatGPT, Gemini of Claude in de browser | niets uit de repo                                               |
+
+Werk je met een van de eerste vier, dan hoef je niets te doen. Klopt een antwoord
+duidelijk niet met onze afspraken, dan is de kans groot dat je in een tool zit die
+`AGENTS.md` niet leest.
+
+## Skills bij Claude Code
+
+In `.claude/skills/` staat de werkwijze uitgeschreven als vijf skills. Ze zeggen hetzelfde
+als deze `docs/`, maar korter en gericht op het doen:
+
+| Skill                | Waarvoor                                                |
+| -------------------- | ------------------------------------------------------- |
+| `draagvlak-style`    | Vóór de eerste regel: comments, annotaties, opmaak      |
+| `draagvlak-screen`   | Een scherm, een formulier, een stukje HTML, een melding |
+| `draagvlak-design`   | CSS, tokens, ruimte, kleur, focus, toegankelijkheid     |
+| `draagvlak-database` | Een query, een repository, een kolom, het schema        |
+| `draagvlak-review`   | Voordat je iets teruggeeft of een pull request opent    |
+
+Je kunt ze aanroepen met `/draagvlak-screen` en zo verder. Verandert er iets aan de
+werkwijze, pas dan `AGENTS.md` én de skill aan; een regel die twee keer ergens staat gaat
+uit elkaar lopen.
 
 ## In de browser
 
@@ -19,26 +46,30 @@ bij je Project instructions, je Gem of je Claude-project. Daarna hoef je alleen 
 nog te stellen.
 
 Plak er altijd het echte bestand bij dat je wilt laten aanpassen. Zonder dat bestand
-verzint elk model paden en functienamen die hier niet bestaan.
+verzint elk model paden en klassenamen die hier niet bestaan.
 
 ## Waar je op let
 
-Een model dat de instructies niet heeft gehad, stelt bijna altijd MVC, Laravel of
-Tailwind voor. Dat is niet fout in het algemeen, maar wel hier. Krijg je zo'n antwoord,
-dan zijn de instructies niet meegestuurd.
+Een model dat de instructies niet heeft gehad, stelt bijna altijd Laravel, Eloquent of
+Tailwind voor, of bouwt er een router en een controllerlaag bij. Dat is niet fout in het
+algemeen, maar wel hier. Krijg je zo'n antwoord, dan zijn de instructies niet
+meegestuurd.
 
-Zoek elke voorgestelde functienaam in de repo op voordat je hem overneemt. Bestaat hij
-niet, dan is hij verzonnen. Dat gebeurt vaker bij helper-achtige namen die logisch
-klinken, zoals `getScore()` of `renderView()`.
+Zoek elke voorgestelde klasse of methode in de repo op voordat je hem overneemt. Bestaat
+hij niet, dan is hij verzonnen. Dat gebeurt het vaakst bij namen die logisch klinken,
+zoals `getScore()` of `ContactService`.
 
-Let ook op imports. Een model dat dit project niet kent, zet bovenin je pagina een rij
-`use function`-regels of een namespace. Die horen hier niet: `bootstrap.php` laadt alles
-uit `src/` zelf in.
+Let op waar het antwoord dingen neerzet. Deze vier fouten glippen er het vaakst doorheen:
 
-Controleer of er geen Nederlandse tekst in `src/` belandt en geen Engelse tekst op het
-scherm. Dat is de fout die het vaakst doorheen glipt.
+- iets van één onderwerp dat buiten zijn eigen feature belandt;
+- logica in een template of een query in een pagina-klasse;
+- een Nederlandse zin in `src/`;
+- een docblock van vijf regels die alleen herhaalt wat de code al zegt.
 
-Draai `composer lint` en open het scherm in de browser voordat je commit. Een antwoord
+Controleer ook of er niets op het scherm belandt dat alleen voor het team bestaat: een
+testaccount, een demo-melding, mensen die er zomaar in staan.
+
+Draai `composer check` en open het scherm in de browser voordat je commit. Een antwoord
 dat er goed uitziet is niet hetzelfde als code die draait.
 
 ## Wat je niet aan een model overlaat

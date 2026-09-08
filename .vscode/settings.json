@@ -1,0 +1,49 @@
+// Shared editor settings. Personal preferences belong in your own user settings.
+//
+// The extensions these lean on are listed in .vscode/extensions.json; VS Code offers to
+// install them when you open the project. Until you do, the lines below are simply
+// ignored and the editor greys them out.
+{
+    "editor.rulers": [100],
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": true,
+    "files.eol": "\n",
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "files.trimFinalNewlines": true,
+
+    // PHP is formatted by php-cs-fixer, through .php-cs-fixer.php, so the same rules
+    // apply on save and in "composer format". The extension does that itself, which is
+    // why VS Code's own formatter stays out of the way here.
+    "[php]": {
+        "editor.formatOnSave": false
+    },
+    "php-cs-fixer.executablePath": "${workspaceFolder}/vendor/bin/php-cs-fixer",
+    "php-cs-fixer.config": "${workspaceFolder}/.php-cs-fixer.php",
+    "php-cs-fixer.onsave": true,
+    "php-cs-fixer.allowRisky": true,
+    "php-cs-fixer.formatHtml": false,
+
+    // Everything else goes through Prettier, with .prettierrc.
+    "[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    "[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    "[markdown]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+    // The helper types come from docblocks, so keep the checks on.
+    "intelephense.environment.phpVersion": "8.4.0",
+    "intelephense.diagnostics.undefinedTypes": true,
+    "intelephense.diagnostics.undefinedMethods": true,
+    "intelephense.diagnostics.undefinedProperties": true,
+    "intelephense.format.enable": false,
+
+    "files.associations": {
+        ".php-cs-fixer.php": "php"
+    },
+    "search.exclude": {
+        "**/vendor": true,
+        "**/node_modules": true
+    }
+}

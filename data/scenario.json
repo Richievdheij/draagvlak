@@ -1,1 +1,43 @@
-{}
+{
+  "contacts": [
+    {
+      "name": "Sanne de Wit",
+      "relation": "Beste vriendin",
+      "score": 55,
+      "isEmergencyContact": true,
+      "listsYou": true,
+      "note": "Reageert bijna altijd binnen een paar uur.",
+      "message": {
+        "body": "Red je het morgen om me te helpen verhuizen? Ik moet het vandaag doorgeven.",
+        "waitSeconds": 0,
+        "respondWithinSeconds": 15
+      }
+    },
+    {
+      "name": "Joep Bakker",
+      "relation": "Vriend van de opleiding",
+      "score": 68,
+      "isEmergencyContact": false,
+      "listsYou": true,
+      "note": "Vraagt vaker of je meegaat.",
+      "message": {
+        "body": "Ben je er vanavond bij? Ik geef de groep om acht uur door.",
+        "waitSeconds": 1800,
+        "respondWithinSeconds": 0
+      }
+    },
+    {
+      "name": "Milan Vos",
+      "relation": "Broer",
+      "score": 69,
+      "isEmergencyContact": true,
+      "listsYou": true,
+      "note": "Belt liever dan dat hij appt.",
+      "message": {
+        "body": "Gaat het wel goed met je? Je reageert al een tijdje niet.",
+        "waitSeconds": 93600,
+        "respondWithinSeconds": 0
+      }
+    }
+  ]
+}

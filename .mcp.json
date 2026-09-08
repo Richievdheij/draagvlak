@@ -1,0 +1,14 @@
+{
+    "mcpServers": {
+        "draagvlak-files": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-filesystem", "."],
+            "env": {}
+        },
+        "herd": {
+            "command": "herd-mcp.phar",
+            "args": [],
+            "env": {}
+        }
+    }
+}

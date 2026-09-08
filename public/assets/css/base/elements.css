@@ -77,11 +77,16 @@ samp {
     font-size: 0.9em;
 }
 
-/* Keyboard users have to be able to see where they are. Never remove this. */
+/*
+ * Keyboard users have to be able to see where they are. Never remove this.
+ *
+ * One ring and no more: the outline follows the corner the element already has,
+ * so a rounded field does not get a square box drawn around it, and nothing
+ * else changes colour underneath it.
+ */
 :focus-visible {
     outline: 2px solid var(--color-focus);
-    outline-offset: 2px;
-    border-radius: var(--radius-xs);
+    outline-offset: var(--focus-offset, 2px);
 }
 
 ::selection {

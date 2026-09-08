@@ -1,0 +1,60 @@
+/*
+ * The block with your own contact code in it.
+ *
+ * Belongs to views/features/contacts/code-card.php. It is the first thing on
+ * the screen and the only block in the accent colour, because it is the only
+ * way anybody ends up on your list.
+ */
+
+.code-card {
+    padding: var(--space-5);
+    background-color: var(--color-accent-soft);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-md);
+    text-align: center;
+}
+
+.code-card__label {
+    color: var(--color-text-soft);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+}
+
+.code-card__value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    margin-block-start: var(--space-2);
+    color: var(--color-accent);
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+}
+
+/* Only shown once its module runs; without JavaScript the code is still there
+   to read and type over. */
+.code-card__copy {
+    min-height: 2.75rem;
+    padding-inline: var(--space-3);
+    color: var(--color-accent);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-medium);
+    letter-spacing: normal;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.code-card__copy:hover {
+    background-color: var(--color-surface);
+}
+
+.code-card__note {
+    margin-block-start: var(--space-3);
+    color: var(--color-text-soft);
+    font-size: var(--text-sm);
+}

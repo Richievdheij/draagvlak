@@ -1,0 +1,22 @@
+# Only public/ belongs on the web.
+#
+# "composer start" already serves public/ and never reads this file. It is here
+# for an Apache setup (XAMPP, Laragon, a shared host) where the document root is
+# the project folder: without it, config.php with your database password and
+# everything in data/ can be downloaded by guessing the URL.
+#
+# The right fix is still to point the document root at public/. This is the net
+# under it, not a replacement.
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Everything that is not already inside public/ is served from there.
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Without mod_rewrite, at least refuse the files that must never be readable.
+<FilesMatch "^(composer\.(json|lock)|package(-lock)?\.json|config(\.local)?\.php|bootstrap\.php|\.php-cs-fixer\.php)$">
+    Require all denied
+</FilesMatch>

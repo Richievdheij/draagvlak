@@ -1,0 +1,22 @@
+/*
+ * The contacts screen.
+ *
+ * Belongs to views/features/contacts/contacts.php. The code block and the rows
+ * have their own files next to this one.
+ */
+
+.contacts__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+/* An empty list is a normal state, not a warning. It says what the app counts
+   with and leaves the rest to you. */
+.contacts__empty {
+    padding: var(--space-5);
+    background-color: var(--color-surface-muted);
+    border-radius: var(--radius-md);
+    color: var(--color-text-soft);
+    font-size: var(--text-sm);
+}

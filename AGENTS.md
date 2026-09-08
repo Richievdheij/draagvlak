@@ -1,8 +1,8 @@
 # AGENTS.md
 
-Instructions for any AI assistant working in this repository: Claude, ChatGPT, Gemini,
-Copilot, Cursor. This file is the single source of truth. `CLAUDE.md` and `GEMINI.md`
-point here and only add tool-specific notes.
+Instructions for any AI assistant working in this repository. This file is the single
+source of truth. `CLAUDE.md`, `GEMINI.md` and `.github/copilot-instructions.md` point
+here and only add tool-specific notes.
 
 Human teammates should read `docs/` instead. Those are in Dutch and explain the same
 rules in plain language.
@@ -15,7 +15,9 @@ Rotterdam. It shows a 2038 app that turns social support into a public number be
 
 Two consequences that decide most judgement calls:
 
-- Screens must feel finished enough that a participant forgets it is a prototype.
+- Screens must feel finished enough that a participant forgets it is a prototype. That
+  includes never printing anything that only exists for the team: no demo credentials,
+  no seeded strangers, no "test" anywhere a participant can see it.
 - The uncomfortable parts of the concept are the product. Never soften a screen to be
   friendlier, never add a reassuring disclaimer, never make the opt-out work.
 
@@ -23,8 +25,8 @@ Read `docs/01-project-en-scenario.md` before changing copy, and
 `docs/06-onderzoek-en-inzichten.md` before changing anything that came out of user
 research. Those two files carry decisions that should not be re-derived.
 
-The home screen, logging in and registering are built. Every other screen in `public/`
-is an empty file with its own stylesheet already wired up, waiting for content.
+The home screen, contacts, logging in and registering are built. Every other screen has
+a page class, a template and a stylesheet, all empty and waiting for content.
 
 ## Stack
 
@@ -33,95 +35,192 @@ builder. Vanilla ES modules, no bundler, no npm runtime dependencies. CSS with c
 properties, no preprocessor. State for one visit lives in the PHP session; everything
 that has to survive a refresh lives in the database.
 
-Do not add a framework, a build step, a CSS library, a JS library or an ORM.
-If a task seems to need one, say so in one sentence and solve it without.
+Classes are found by a PSR-4 autoloader written out in `bootstrap.php`, so a checkout
+without `composer install` still works. `composer.json` declares the same mapping for
+editors. There is never a list of files to maintain and never a `composer dump-autoload`.
+
+The one dependency is `friendsofphp/php-cs-fixer`, and it is `require-dev`: the app does
+not run on it. Do not add a framework, a build step, a CSS library, a JS library or an
+ORM. If a task seems to need one, say so in one sentence and solve it without.
+
+PHP is 8.4 and `composer.json` pins `^8.4`, so 8.5 works and 9.0 cannot slip in. Node 24
+is only needed for the formatters. Nothing depends on where the project sits on disk or
+what the folder is called: every path is derived from the file it is written in.
+
+## Running it
+
+Laravel Herd serves it at `http://draagvlak.test`. Herd picks `public/` as the document
+root by itself, because `BasicWithPublicValetDriver` matches any project with a `public/`
+folder, so no Valet driver has to be written. The site is pinned with `herd isolate 8.4`.
+
+Without Herd, `composer start` serves the same thing on `http://localhost:8000`.
+
+MySQL is reached over TCP on `127.0.0.1:3306`, never over a socket: a socket path differs
+per machine and per installer. That is the same server `http://phpmyadmin.test` talks to.
+
+`.mcp.json` registers two MCP servers for this project: `draagvlak-files` (the files in
+this folder, relative path so it works anywhere) and `herd` (sites and PHP versions).
 
 ## Repository layout
 
-The layout is page-based: one PHP file per screen in `public/`, logic in `src/`, the
-document in `views/layouts/`, shared fragments in `views/partials/`. This is not MVC and
-should not be converted to MVC.
+Feature-first. Everything that belongs to one subject sits in one folder, in `src/`, in
+`views/` and in `assets/css/` alike, and those three mirror each other exactly.
 
 ```
-public/            One file per screen. The only web-reachable folder.
-  assets/css/      base/, layouts/, partials/, components/, pages/. See below.
-  assets/js/       app.js entry point plus modules/.
-  assets/fonts/    Self-hosted Outfit and Inter, as woff2.
-src/               PHP helpers, loaded automatically by bootstrap.php.
-  support/         Config, escaping and URLs, session and flashes, request, formatting,
-                   and the page template.
-  data/            The database connection and queries, the JSON reader, the seed.
-  auth/            Registering, logging in, and closing a screen for visitors.
-  score/           The rules of the scenario and what a choice costs.
-  contacts/        The list of people, and taking someone off it.
-  messages/        The inbox, the response window and the outcome of a choice.
-views/layouts/     The document printed around a screen.
-views/partials/    Fragments used by the layout or by more than one page.
-database/          schema.sql: the structure of the database.
-bin/               Command line scripts, run through composer.
-data/              scenario.json: the Dutch content every participant starts with.
-docs/              Dutch documentation for the team.
-bootstrap.php      Required by every page. Paths, error handling, session, helper loading.
-config.php         Database settings. Overridden per machine by config.local.php.
+src/
+  Core/                     The foundation. You rarely open it.
+    App.php                 Every service, wired together once
+    Page.php  Action.php    The two base classes a screen extends
+    Config.php  Paths.php
+    Http/                   Request Response Session Csrf
+    Data/                   Database JsonStore
+    View/                   View Assets Html Url Format
+  Features/<Name>/          One folder per subject
+    <domain classes>        Entities, repositories, rules
+    Pages/                  One class per screen of this feature
+views/
+  layout/                   app site-header site-nav site-footer failure
+  components/               Fragments any feature may use
+  features/<name>/          The templates of that feature
+public/
+  <screen>.php              One file per URL. Four lines each.
+  assets/css/
+    base/                   fonts tokens reset elements utilities
+    layout/                 One file per file in views/layout/
+    components/             One file per file in views/components/
+    features/<name>/        The stylesheets of that feature
+  assets/js/                app.js plus modules/
+  assets/fonts/             Self-hosted Outfit and Inter
+database/schema.sql         The structure of the database
+bin/                        Command line scripts, run through composer
+data/scenario.json          The Dutch starting content of the demo account
+docs/                       Dutch documentation for the team
+bootstrap.php               Autoloader, then App::boot(). Returns the App.
+config.php                  Settings. Overridden per machine by config.local.php.
 ```
 
-Every directory name is lowercase. Placement is correctness, not taste: a file in the
-wrong folder is a defect.
+The features today are `Auth`, `Contacts`, `Messages`, `Score`, `Home`, `Settings`,
+`Screening`, `Reset` and `Scenario`.
 
-- Logic that a second page could ever need goes in `src/`, never in a page file.
-- Markup used by a second page goes in `views/partials/`, never copied.
-- Never declare a function inside a page or a partial; both are included more than once.
-- Never write a `.php` file into `public/` that is not a screen a person can open.
-- A file in `src/` only declares functions and constants. It is loaded on every request,
-  so code that runs on its own does not belong there.
+Placement is correctness, not taste: a file in the wrong folder is a defect.
 
-## How a page works
+- Something that belongs to one subject goes in that feature, all of it.
+- Something two features need goes in `components/`, or in `Core/` when it is plumbing.
+- A class in `src/` declares only. Nothing there runs on its own at load time.
+- A template only prints. A calculation in a template belongs in the page class.
+- Never write a `.php` file into `public/` that is not a URL a person can open.
 
-There are no imports. `bootstrap.php` loads every PHP file in `src/`, so every helper is
-available everywhere. There is no `use function` line, no namespace and no autoload list
-to maintain: a new file in `src/` works immediately.
+## How a screen works
+
+Four files, and their names follow from each other.
+
+```
+public/contacts.php                        the URL
+src/Features/Contacts/Pages/ContactsPage.php   what it does
+views/features/contacts/contacts.php       what it looks like
+public/assets/css/features/contacts/*.css  how it looks
+```
+
+The file in `public/` is the URL and nothing else:
 
 ```php
 <?php
 
 declare(strict_types=1);
 
+use Draagvlak\Features\Contacts\Pages\ContactsPage;
+
 /**
  * One sentence saying what this screen is for.
  */
 
-require __DIR__ . '/../bootstrap.php';
+$app = require __DIR__ . '/../bootstrap.php';
 
-requireLogin();
-
-if (isPost()) {
-    // Handle the form, then always redirect.
-    redirect('contacten');
-}
-
-$contacts = activeContacts(currentUserId());
-
-page('Contacten');
-
-?>
-<section class="section">
-    <h1>Contacten</h1>
-</section>
+(new ContactsPage($app))->handle();
 ```
 
-`page()` captures everything the screen prints and hands it to `views/layouts/app.php`
-when the script ends. That is why a screen has no header include and no closing call.
-Everything above the `?>` is loading and deciding; everything below it is markup with
-variables in it. A calculation below the `?>` belongs in a function in `src/`.
+The page class decides everything:
 
-The helpers a screen can rely on: `e()`, `attributes()`, `asset()`, `url()`,
-`currentPage()`, `isCurrentPage()`, `page()`, `partial()`, `flash()`, `redirect()`,
-`isPost()`, `input()`, `inputInt()`, `csrfField()`, `isValidCsrf()`, `rememberForm()`,
-`takeForm()`, `sessionGet()`, `sessionSet()`, `sessionForget()`, `sessionReset()`,
-`requireLogin()`, `requireGuest()`, `currentUser()`, `currentUserId()`, `db()`,
-`dbAll()`, `dbFirst()`, `dbValue()`, `dbRun()`, `dbInsert()`, `loadJson()`,
-`timeParts()`, `formatCountdown()`, `formatPrice()`, `initial()`. Read the file in
-`src/` before using one; do not guess at a signature.
+```php
+final class ContactsPage extends Page
+{
+    protected function title(): string
+    {
+        return 'Contacten';
+    }
+
+    protected function submit(): void
+    {
+        $this->requireValidCsrf('contacts');
+
+        // Change something, then always redirect.
+        Response::redirect('contacts');
+    }
+
+    /** @return array<string, mixed> */
+    protected function data(): array
+    {
+        return ['contacts' => $this->app->contacts->active($this->app->auth->id())];
+    }
+}
+```
+
+The template prints, and only prints:
+
+```php
+<?php foreach ($contacts as $contact): ?>
+    <p><?= $this->e($contact->name) ?></p>
+<?php endforeach; ?>
+```
+
+`Page::handle()` always runs the same four steps in the same order: `authorise()`,
+`submit()` when the request is a POST, `data()`, then the template inside the layout.
+That order is the reason a template never has to work anything out.
+
+**Nothing is configured.** A page knows its feature from its namespace and its name from
+its class name, so `LoginPage` in `Features\Auth\Pages` is `/login.php`, prints
+`views/features/auth/login.php` and gets the stylesheets in
+`assets/css/features/auth/`. `EmergencyContactsPage` becomes `emergency-contacts`.
+
+Override only what your screen needs. `authorise()` defaults to requiring a login,
+`nav()` defaults to the screen itself, `submit()` does nothing, `data()` returns nothing.
+A screen that only redirects (logging out) extends `Action` instead and has no template.
+
+In a template `$this` is the `View`: `$this->e()`, `$this->attributes()`, `$this->url()`,
+`$this->asset()`, `$this->csrfField()` and `$this->partial()`. `partial()` takes the path
+under `views/` in full, so you can always see which file you are looking at:
+
+```php
+$this->partial('components/notices', ['flashes' => $flashes]);
+$this->partial('features/home/score-block', ['account' => $account]);
+```
+
+Read the class in `src/` before using a method; do not guess at a signature.
+
+## Services
+
+`bootstrap.php` returns the `App`. A page reaches everything through it.
+
+| `$this->app->…` | What it is                                             |
+| --------------- | ------------------------------------------------------ |
+| `request`       | Method, submitted values, which screen this is         |
+| `session`       | Per-visit state, flash messages, a form that came back |
+| `csrf`          | The form token                                         |
+| `view`          | Rendering a template                                   |
+| `assets`        | Asset URLs and the stylesheets of a feature            |
+| `config`        | Settings from config.php                               |
+| `database`      | Prepared statements, nothing else                      |
+| `auth`          | Who is logged in, and the guards                       |
+| `accounts`      | The users table, including passwords and contact codes |
+| `registration`  | Checking the registration form                         |
+| `contacts`      | The list, adding by code, removing                     |
+| `messages`      | The inbox and what answering costs                     |
+| `scores`        | Changing a number and writing down why                 |
+| `scenario`      | The starting content, for the demo account             |
+
+Nothing constructs its own dependencies halfway down a method, and nothing reaches for a
+global. Add a service by adding a property and a line in `App::__construct()`, where the
+whole graph is visible in one screenful.
 
 ## The database
 
@@ -133,116 +232,178 @@ Every query is a prepared statement with the values passed separately. A value n
 goes into the SQL string, not even one you typed yourself:
 
 ```php
-dbAll('SELECT * FROM contacts WHERE user_id = ?', [$userId]);   // right
-dbAll("SELECT * FROM contacts WHERE user_id = $userId");        // wrong
+$this->database->all('SELECT * FROM contacts WHERE user_id = ?', [$userId]);   // right
+$this->database->all("SELECT * FROM contacts WHERE user_id = $userId");        // wrong
 ```
 
 Always look a row up together with the id of the visitor who owns it, otherwise a
 changed number in the URL reaches someone else's data.
+
+SQL lives in a repository inside its feature, never in a page class and never in a
+template. A repository hands back typed objects (`Account`, `Contact`, `Message`), not
+raw rows.
 
 Four tables: `users`, `contacts`, `messages`, `score_events`. A change to a score is
 written to `score_events` as well as to the number itself, so a researcher can read back
 a whole session. Add a column by editing `database/schema.sql` and running
 `composer db:fresh`; there are no migrations in this project.
 
-Content a participant reads is not stored in `src/`: the people and their messages live
-in `data/scenario.json` and are written to the database by `seedScenarioFor()` when an
-account is made.
+`contacts.contact_user_id` is the seam between the two kinds of contact. It points at a
+real account when two people exchanged a code, and is null for the people from
+`data/scenario.json`, who belong to nobody. A query reads the name and the number of a
+linked contact from the account, so both sides always see the same number.
 
 ## Accounts
 
-Passwords are hashed with `password_hash()` and never stored or logged in any other
-form. `requireLogin()` on the first line of a screen closes it for visitors who are not
-logged in; `requireGuest()` keeps a logged-in visitor off the login and register screens.
-The session id is regenerated on a successful login, and five wrong attempts close the
-form for fifteen minutes.
+Passwords are hashed with `password_hash()` and never leave `AccountRepository` in any
+other form. `Guard::requireLogin()` closes a screen for visitors who are not logged in;
+`requireGuest()` keeps a logged-in visitor off the login and register screens. The
+session id is regenerated on a successful login, and five wrong attempts close the form
+for fifteen minutes.
 
-Every POST form prints `<?= csrfField() ?>` and the screen that handles it checks
-`isValidCsrf()` before it changes anything. A screen that changes something ends in
-`redirect()`, so refreshing never submits twice.
+Registering asks for a name, an address and one password. There is no second password
+field: repeating a password does not catch the typo that matters and is one more thing
+between somebody and their account.
+
+A new account starts empty. It gets a contact code of its own (`SAM-7QK4`), and somebody
+who has that code can add them; the link is made both ways at once. Nobody is put on a
+list for them. Only the demo account is given the content of `data/scenario.json`.
+
+That demo account is a fixture, not a person. `src/Features/Scenario/DemoSeeder.php` holds
+its address, password and contact code as constants, so they survive every `db:fresh` and
+the README can name them. Its password is written down there, which is why `app.demo` in
+`config.php` exists: set it to `false` in `config.local.php` and `composer db:setup` stops
+after the tables. Never seed it from anywhere else, and never print it on a screen.
+
+Every POST form prints `<?= $this->csrfField() ?>` and the page that handles it calls
+`requireValidCsrf()` before it changes anything. A page that changes something ends in
+`Response::redirect()`, so refreshing never submits twice.
 
 ## Language rule
 
 Code is English: identifiers, comments, docblocks, commit messages, branch names,
 file names, CSS class names, JSON keys, database tables and columns, console messages.
+URLs are English too, because a file in `public/` is its own URL.
 
-Dutch is what the participant reads: page copy, button labels, error messages shown
-on screen, flash messages, the content of `data/scenario.json`, and everything in
-`docs/`.
+Dutch is what the participant reads, and it lives in `views/`: page copy, button labels,
+error messages on screen, flash messages, and the content of `data/scenario.json`.
+`docs/` is Dutch too.
 
-Internal keys stay English even when they represent something Dutch. A function returns
-`answered_in_time` or `below_minimum`; the Dutch sentence that belongs to that key is
-written on the screen that prints it. Never translate an internal key to Dutch and never
-put a Dutch string in `src/`. That is why the menu labels sit in
-`views/partials/site-nav.php` and the labels of the theme switch sit in data attributes
-in `views/partials/site-footer.php`.
+There is exactly one Dutch string in `src/`: the return of `title()` in a page class,
+because that is the name of the screen. Everything else that a participant reads is in a
+template. A class returns a key like `answered_in_time` or `below_minimum`, and the
+Dutch sentence that belongs to it is written where it is printed.
+
+That is why:
+
+- flash messages are queued as a key with values, and every sentence they can produce
+  lives in `views/components/notices.php`;
+- form errors come back as keys, and the Dutch for them sits in the screen's template;
+- the menu labels sit in `views/layout/site-nav.php`;
+- the labels of the theme switch and the copy button sit in data attributes, so nothing
+  Dutch ends up in a JavaScript module.
+
+Never translate an internal key to Dutch, and never put a Dutch sentence in `src/`.
 
 ## Naming
 
-| Thing | Convention | Example |
-|---|---|---|
-| Directory | lowercase, kebab-case | `src/support` |
-| PHP function | camelCase | `scoreForAnswer()` |
-| PHP class | PascalCase | `ScoreCalculator` |
-| PHP constant | UPPER_SNAKE_CASE | `REWARD_THRESHOLD` |
-| PHP variable | camelCase | `$secondsWaiting` |
-| File with functions | kebab-case | `score-rules.php` |
-| File with a class | PascalCase | `ScoreCalculator.php` |
-| Page file | lowercase Dutch, no dashes | `noodcontacten.php` |
-| Layout and partial | kebab-case | `contact-card.php` |
-| Database table | plural, snake_case | `score_events` |
-| Database column | snake_case | `respond_within_seconds` |
-| CSS file | named after what it styles | `partials/contact-card.css` |
-| CSS block | kebab-case | `.contact-card` |
-| CSS element | double underscore | `.contact-card__name` |
-| CSS modifier | double dash | `.contact-card--urgent` |
-| CSS state class | `is-` prefix | `.is-open` |
-| CSS custom property | `--group-name` | `--color-accent` |
-| JS function and variable | camelCase | `startComponents` |
-| JS module file | kebab-case | `nav-toggle.js` |
-| JSON key | camelCase | `respondWithinSeconds` |
-| Data attribute | kebab-case | `data-component` |
+| Thing                         | Convention                                    | Example                               |
+| ----------------------------- | --------------------------------------------- | ------------------------------------- |
+| Namespace                     | `Draagvlak\` plus the folders                 | `Draagvlak\Features\Contacts`         |
+| Folder in `src/`              | PascalCase, matching the namespace            | `src/Features/Auth/Pages`             |
+| Any other folder              | lowercase, kebab-case                         | `views/features/contacts`             |
+| Class file                    | PascalCase, one class per file                | `ContactRepository.php`               |
+| PHP class                     | PascalCase, `final` unless it is a base class | `ScoreBoard`                          |
+| PHP method and variable       | camelCase                                     | `activeContacts()`, `$secondsWaiting` |
+| PHP class constant            | UPPER_SNAKE_CASE, typed                       | `public const int REWARD_THRESHOLD`   |
+| Page class                    | what the screen is, plus `Page`               | `EmergencyContactsPage`               |
+| URL, entry file, template     | lowercase English, kebab-case                 | `emergency-contacts.php`              |
+| Layout and component fragment | kebab-case                                    | `message-card.php`                    |
+| Database table                | plural, snake_case                            | `score_events`                        |
+| Database column               | snake_case                                    | `respond_within_seconds`              |
+| CSS file                      | named after what it styles                    | `components/message-card.css`         |
+| CSS block                     | kebab-case                                    | `.message-card`                       |
+| CSS element                   | double underscore                             | `.message-card__name`                 |
+| CSS modifier                  | double dash                                   | `.message-card--urgent`               |
+| CSS state class               | `is-` prefix                                  | `.is-open`                            |
+| CSS custom property           | `--group-name`                                | `--color-accent`                      |
+| JS function and variable      | camelCase                                     | `startComponents`                     |
+| JS module file                | kebab-case                                    | `nav-toggle.js`                       |
+| JSON key                      | camelCase                                     | `respondWithinSeconds`                |
+| Data attribute                | kebab-case                                    | `data-component`                      |
 
-Page file names are Dutch because they become the URL a participant sees. Everything
-else is English. Note the one seam: a column is `respond_within_seconds` and the same
-value in JSON or PHP is `respondWithinSeconds`.
+Note the one seam: a column is `respond_within_seconds` and the same value in JSON or PHP
+is `respondWithinSeconds`.
+
+A class is `final` unless something is meant to extend it; today only `Page` and `Action`
+are not. Properties are `private readonly` unless a template needs them, and a value
+object that never changes is a `final readonly class`.
+
+`static` is for something that depends on nothing and therefore always gives the same
+answer: escaping, building a URL, formatting a price, a rule of the scenario. Anything
+holding a connection, a session or a visitor is a normal object built in `App`.
 
 ## Comments and documentation
 
-Write a docblock on every exported thing: every function in `src/`, every function
-exported from a JS module, every layout and every partial. The docblock says why the
-thing exists and what a caller has to know, not what the next line does.
+Short. A comment earns its place by saying something the code cannot.
 
-PHP: `/** */` with typed `@param` and `@return` only where the signature does not
-already say it. Every layout and partial starts with a docblock listing its `@var`
-inputs, because those arrive through `extract()` and an editor cannot infer them.
+**A class** gets one sentence saying why it exists. A second only when a rule of the
+scenario would otherwise be lost.
 
-JavaScript: JSDoc on exported functions with `@param` and `@returns` including types,
-since there is no TypeScript here. Internal helpers get a one-line description without
-tags.
+**A method** gets a docblock when the name and the signature do not already say it, or
+when an annotation is needed. `isPost(): bool` needs nothing.
 
-Every CSS file opens with a comment saying what it styles and which file it belongs to.
+**Annotations**, and this is the part that matters, because there is no static analysis
+here and an editor has nothing else to go on:
 
-Inline comments only where the logic is non-obvious or where a choice looks like a
-mistake and is not. In this project that is usually the scenario: a disabled toggle, a
-grey escape button, a penalty that keeps running. Say why. Never comment the obvious,
-never leave a commented-out block, never write history in a comment ("used to be",
-"now that", "verified"); that belongs in the commit message.
+- `@param` and `@return` only where the type does not already say it. An `array` always
+  gets a shape (`array<string, mixed>`, `list<Contact>`, `array{values: ...}`), or you
+  return an object instead.
+- `@throws` for an exception a caller has to handle.
+- `@var` on a property whose type is an array, and on every template, listing its inputs.
+  Those arrive through `extract()` and cannot be inferred.
 
-Never add a comment that names a person, a date or an AI tool.
+**A template** starts with one sentence and its `@var` list, aligned in a column.
+
+**An inline comment** only where correct code looks wrong. In this project that is almost
+always the scenario: a disabled toggle, a grey escape button, a penalty that keeps
+running. Two lines at most.
+
+**Never**: a comment that repeats the next line, a history note ("used to be", "now
+that", "verified"), a name, a date, an AI tool, a commented-out block, or a banner made
+of dashes. `@param string $name Name.` is worse than no annotation at all.
+
+Every CSS file opens with one or two lines saying what it styles and which template it
+belongs to. Every exported JavaScript function gets JSDoc with types, because there is no
+TypeScript; internal helpers get a single line without tags.
+
+## Formatting
+
+Do not hand-format. `composer format` runs PHP-CS-Fixer with `.php-cs-fixer.php`, and
+`npm run format` runs Prettier with `.prettierrc` for CSS, JavaScript and Markdown. Both
+run on save in VS Code through `.vscode/settings.json`.
+
+What they enforce: four spaces, LF, a final newline, no trailing whitespace, PSR-12,
+sorted imports with none unused, a blank line before `return` and before a block, one
+blank line between class members, trailing commas in multi-line calls, and a leading `\`
+on the global functions PHP can optimise.
+
+What they leave to you: how you align a docblock, and where you put a blank line inside a
+method to separate one thought from the next. Use them. A method that reads as three
+short paragraphs is easier than one wall of statements.
+
+Before you push, `composer check` runs the syntax check and the format check together.
 
 ## Editor support
 
-The setup relies on the helper files in `src/` and on docblocks for IntelliSense. Keep it
-working:
-
-- Type every parameter and return value. `mixed` only where the value genuinely is.
-- Do not add a function to a page or a partial. An editor cannot offer what it cannot
-  find in `src/`.
+- Type every parameter, return value and property. `mixed` only where the value
+  genuinely is.
+- Give an `array` a shape in the docblock, or return an object instead.
+- Do not declare a function or a class in a template.
 - No `@phpstan-ignore`, no `eslint-disable`, no silencing with `@`.
-- Nothing has to be registered when you add a file to `src/` or a stylesheet to
-  `assets/css/`. If a function is reported as undefined, the file is not in `src/` or the
-  name is misspelled.
+- Nothing has to be registered when you add a class or a stylesheet. If a class is
+  reported as undefined, its folder does not match its namespace or the file is not named
+  after the class.
 
 ## Design system
 
@@ -250,25 +411,25 @@ All colour, type, spacing and radius values live in
 `public/assets/css/base/tokens.css`. A literal hex code, px value or font name anywhere
 else is a bug. Change the palette by editing tokens, never by overriding a token at the
 point of use. A one-off size may become a token on the component itself, like
-`--avatar-size` in `components/avatar.css`.
+`--avatar-size` or `--field-height`.
 
 Tokens come in three layers. Primitives (`--mint-600`) are the raw palette and are only
 used to build the layer above. Semantic tokens (`--color-accent`, `--color-surface`) are
 what you write in a component. Light and dark share one set through `light-dark()`, so a
 new colour needs both values in one line.
 
-Stylesheets mirror the code, and every place has its own file:
+Stylesheets mirror the code:
 
 ```
-base/        fonts, tokens, reset, elements, utilities. Loaded first, in that order.
-layouts/     one file per layout in views/layouts/
-partials/    one file per partial in views/partials/
-components/  one file per component that more than one screen uses
-pages/       one file per screen in public/, named after it, loaded only there
+base/        Loaded first, in the order fonts, tokens, reset, elements, utilities
+layout/      One file per file in views/layout/
+components/  One file per file in views/components/
+features/<name>/  Everything for one feature, loaded on that feature's screens only
 ```
 
-Nothing has to be registered: `stylesheets()` finds the files and prints them in that
-order, and `pages/contacten.css` is loaded on `contacten.php` and nowhere else.
+Nothing has to be registered: `Assets::stylesheets()` finds the files and prints them in
+that order. Used on one screen means it belongs to that feature; used by two features
+means it is a component.
 
 The direction is documented in `docs/04-designsysteem.md`: soft mint, white cards on a
 pale green background, generous rounding, a hairline instead of a shadow. It looks
@@ -276,26 +437,46 @@ friendly on purpose, because a scoring app that looked threatening would not be
 believable. Losing points is never red; it goes quiet and beige. Do not add gradients or
 glassmorphism, and keep drop shadows out; a ring (`--ring-accent`) is the one exception.
 
-Typefaces are Outfit for display (the wordmark, headings, the number) and Inter for
-everything read as a sentence. Both are self-hosted in `public/assets/fonts/`; do not add
-a font CDN and do not add a third typeface. Figures that change or line up get
-`.numeric`.
+Typefaces are Outfit for display and Inter for everything read as a sentence. Both are
+self-hosted; do not add a font CDN and do not add a third typeface. Figures that change
+or line up get `.numeric`.
 
-The whole app is one column of `--width-app`, phone width, centred on a laptop. It reads
-as an app; it is not a website that stretches. Test at 390px wide and at desktop width.
+The whole app is one column of `--width-app`, phone width, centred on a laptop. Test at
+390px wide and at desktop width.
 
-Accessibility floor: WCAG AA contrast, visible focus outline, labels on inputs, touch
-targets of at least 44px, `prefers-reduced-motion` respected. Never remove a focus style.
+Accessibility floor: WCAG AA contrast, labels on inputs, touch targets of at least 44px,
+`prefers-reduced-motion` respected, and a focus outline that is always visible.
+
+One focus indicator and no more. `:focus-visible` in `base/elements.css` draws a single
+outline that follows the corner the element already has; a component may move it with
+`--focus-offset` but never remove it, and never add a second signal such as a border that
+also changes colour. An input does not change on hover either: a field that reacts to the
+mouse passing over it reads as a bug.
 
 ## Front-end behaviour
 
 `app.js` starts a module for every element with a `data-component` attribute:
 `data-component="countdown"` loads `modules/countdown.js` and calls its `init(element)`.
 Adding behaviour means adding a module and an attribute, never an import in `app.js` or a
-script tag in the layout. A page without that attribute loads no module at all.
+script tag in the layout.
 
 Behaviour is an enhancement. The server prints a correct page first: the countdown shows
-the right value without JavaScript, and the menu is simply open.
+the right value without JavaScript, the menu is simply open, and a control that would do
+nothing without a module is printed `hidden` and shown by that module. Dutch text a
+module needs comes in through a data attribute.
+
+## Which file your tool reads
+
+Every one of these points at this file and adds only what is specific to the tool. Keep
+them true: a rule that is written down twice will drift.
+
+| Tool                                   | Reads                                                             |
+| -------------------------------------- | ----------------------------------------------------------------- |
+| Claude Code                            | `CLAUDE.md` and `AGENTS.md`, plus the skills in `.claude/skills/` |
+| GitHub Copilot                         | `.github/copilot-instructions.md`                                 |
+| Gemini CLI                             | `GEMINI.md`                                                       |
+| Cursor, Codex and other agents         | `AGENTS.md`                                                       |
+| ChatGPT, Gemini or Claude in a browser | nothing; paste `docs/ai/chatgpt-en-gemini-paste.md`               |
 
 ## Git
 
@@ -317,14 +498,14 @@ branch. Open the pull request against `develop`, never against `main`.
 - Read the file before you edit it. Prefer the file to your memory of it.
 - Make the smallest change that does the job. Do not reformat, rename or restructure
   files you were not asked about.
-- Never invent a path, a function, a CSS class or a column. Grep for it first.
-- Run `composer lint` after touching PHP. Say plainly what you could not run.
+- Never invent a path, a class, a method, a CSS class or a column. Grep for it first.
+- Run `composer check` after touching PHP. Say plainly what you could not run.
 - When something you were asked to do conflicts with this file, do it the way this file
   says and mention the conflict once.
 
 ## Definition of done
 
-A change is done when the page it affects has been opened in a browser at
-`http://localhost:8000` and behaves as intended, at phone width as well, `composer lint`
+A change is done when the screen it affects has been opened in a browser at
+`http://localhost:8000` and behaves as intended, at phone width as well, `composer check`
 is clean, and the screen still reads as Dutch to a participant and as English in the
 source.

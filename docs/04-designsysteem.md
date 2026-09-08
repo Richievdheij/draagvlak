@@ -34,23 +34,24 @@ mee te bouwen.
 `--color-accent`, `--color-danger`. Dit is wat je in een CSS-bestand schrijft.
 
 **Componenttokens** zet je in het component zelf, als één onderdeel een maat nodig heeft
-die verder nergens bestaat. Zo staat `--avatar-size` bovenin `components/avatar.css`.
+die verder nergens bestaat. Zo staat `--avatar-size` bovenin `components/avatar.css` en
+`--field-height` bovenin `components/field.css`.
 
-| Token | Waarvoor |
-| --- | --- |
-| `--color-background` | de achtergrond van de pagina |
-| `--color-surface` | kaarten, invoervelden, meldingen |
-| `--color-surface-muted` | een blok dat stiller is dan de rest |
-| `--color-text` | alle gewone tekst |
-| `--color-text-soft` | uitleg onder een kop |
-| `--color-text-faint` | bijschriften, wachttijden, de kleine regel onderaan |
-| `--color-border` | randen en scheidslijnen |
-| `--color-border-muted` | de rand van iets wat de app liever niet aanbiedt |
-| `--color-accent` | de kleur van het systeem: het woordmerk, knoppen, de meter |
-| `--color-accent-soft` | zachte vulling in die kleur |
-| `--color-on-accent` | tekst op de accentkleur |
-| `--color-danger` | alleen voor een fout ingevuld formulier |
-| `--color-focus` | de rand om het element waar je toetsenbord staat |
+| Token                   | Waarvoor                                                   |
+| ----------------------- | ---------------------------------------------------------- |
+| `--color-background`    | de achtergrond van de pagina                               |
+| `--color-surface`       | kaarten, invoervelden, meldingen                           |
+| `--color-surface-muted` | een blok dat stiller is dan de rest                        |
+| `--color-text`          | alle gewone tekst                                          |
+| `--color-text-soft`     | uitleg onder een kop                                       |
+| `--color-text-faint`    | bijschriften, wachttijden, de kleine regel onderaan        |
+| `--color-border`        | randen en scheidslijnen                                    |
+| `--color-border-muted`  | de rand van iets wat de app liever niet aanbiedt           |
+| `--color-accent`        | de kleur van het systeem: het woordmerk, knoppen, de meter |
+| `--color-accent-soft`   | zachte vulling in die kleur                                |
+| `--color-on-accent`     | tekst op de accentkleur                                    |
+| `--color-danger`        | alleen voor een fout ingevuld formulier                    |
+| `--color-focus`         | de rand om het element waar je toetsenbord staat           |
 
 ## Licht en donker
 
@@ -95,26 +96,25 @@ ontwerp. Hoeken lopen van `--radius-xs` (een balkje) via `--radius-sm` (knoppen)
 `--ring-accent` voor het ene blok dat wél om aandacht vraagt. Slagschaduwen gebruiken we
 niet.
 
-## Eén map per plek
+## Eén map per onderwerp
 
-De CSS is opgebouwd zoals de code. Elk onderdeel heeft zijn eigen bestand, en dat bestand
-heet naar het onderdeel:
+De CSS is ingedeeld zoals de code: dezelfde mappen als in `src/Features/` en in
+`views/`. Elk onderdeel heeft zijn eigen bestand, en dat bestand heet naar het onderdeel.
 
 ```
-base/         fonts, tokens, reset, elements, utilities
-layouts/      één bestand per layout in views/layouts/
-partials/     één bestand per partial in views/partials/
-components/   één bestand per component dat op meer dan één scherm voorkomt
-pages/        één bestand per scherm in public/, en alleen daar ingeladen
+base/              fonts, tokens, reset, elements, utilities
+layout/            één bestand per bestand in views/layout/
+components/        één bestand per bestand in views/components/
+features/<naam>/   alles van één feature
 ```
 
-Ze worden in die volgorde ingeladen, en het bestand van de pagina komt als laatste. Je
-hoeft niets te registreren: zet `partials/score-block.css` in de map en hij wordt
-meegestuurd, en `pages/contacten.css` wordt alleen op `contacten.php` geladen.
+Een scherm laadt `base/`, `layout/`, `components/` en de map van zijn eigen feature, in
+die volgorde. Registreren hoef je niets: zet `features/contacts/code-card.css` in de map
+en hij wordt op de contactenschermen meegestuurd, en nergens anders.
 
-Twijfel je waar iets hoort? Gebruik je het op één scherm, dan `pages/`. Hoort het bij een
-partial, dan `partials/` met dezelfde naam. Kan elk scherm het gebruiken, dan
-`components/`.
+Twijfel je waar iets hoort? Gebruikt één feature het, dan `features/<naam>/`. Gebruiken
+twee features het, dan `components/`. En noem het bestand naar wat het opmaakt, niet naar
+het scherm waar het vandaag toevallig op staat.
 
 ## Klassen schrijven
 
@@ -122,14 +122,17 @@ We gebruiken BEM-achtige namen: `.blok`, `.blok__onderdeel`, `.blok--variant`. E
 toestand die JavaScript aan- en uitzet heet `.is-iets`.
 
 ```html
-<article class="contact-card contact-card--urgent">
-    <span class="contact-card__name">Sanne de Wit</span>
+<article class="message-card message-card--urgent">
+    <span class="message-card__name">Sanne de Wit</span>
 </article>
 ```
 
-Er staat maar één klasse in een selector, dus geen `.section .contact-card span`. Zo kan
+Er staat maar één klasse in een selector, dus geen `.section .message-card span`. Zo kan
 niemand per ongeluk iets overschrijven wat hij niet bedoelde, en werkt een component
 overal hetzelfde.
+
+Opmaken doe je niet met de hand: `npm run format` draait Prettier over de CSS, en in VS
+Code gebeurt dat bij het opslaan.
 
 ## Mobiel
 
@@ -139,13 +142,32 @@ website die is uitgerekt.
 
 Test in de browser op 390 pixels breed én op een normale laptopbreedte.
 
+## Toestanden
+
+Eén focusrand, en er komt nooit een tweede signaal naast. `:focus-visible` in
+`base/elements.css` tekent één omtrek die het hoekje volgt dat het element al heeft. Een
+component mag hem verschuiven met `--focus-offset`, en dat is alles:
+
+```css
+.field__input {
+    /* De rand ligt hier op de rand van het veld zelf, zodat focussen leest als
+       een veld dat oplicht en niet als een tweede kader eromheen. */
+    --focus-offset: 0;
+}
+```
+
+Een invoerveld heeft geen hover-toestand. Een veld dat reageert als je muis er langs gaat
+leest als een bug, niet als afwerking.
+
 ## Toegankelijkheid
 
 Dit is de ondergrens, geen extraatje. Contrast minimaal AA. De focusrand blijft zichtbaar
-en wordt nooit weggehaald. Elk invoerveld heeft een label. Knoppen zijn minstens 44 bij
-44 pixels, want daaronder mis je ze met je duim. Beweging staat uit voor mensen die dat
-in hun systeem hebben aangegeven, en dat is al geregeld in `tokens.css`. Iconen die
-betekenis dragen krijgen tekst erbij of een `aria-label`.
+en wordt nooit weggehaald. Elk invoerveld heeft een echt label, geen placeholder. Knoppen
+en invoervelden zijn minstens 44 bij 44 pixels, want daaronder mis je ze met je duim;
+`--field-height` staat daarom op `2.75rem`. Moet iets kleiner ogen, maak het dan smaller
+en niet lager. Beweging staat uit voor mensen die dat in hun systeem hebben aangegeven,
+en dat is al geregeld in `tokens.css`. Iconen die betekenis dragen krijgen tekst erbij of
+een `aria-label`.
 
 Bovenaan elke pagina staat een verborgen link "Direct naar de inhoud", die zichtbaar
 wordt zodra je met tab begint. Laat die staan.

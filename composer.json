@@ -4,25 +4,45 @@
     "type": "project",
     "license": "MIT",
     "require": {
-        "php": ">=8.4",
+        "php": "^8.4",
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "ext-pdo_mysql": "*"
     },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.64"
+    },
+    "autoload": {
+        "psr-4": {
+            "Draagvlak\\": "src/"
+        }
+    },
     "config": {
         "optimize-autoloader": true,
-        "sort-packages": true
+        "sort-packages": true,
+        "platform": {
+            "php": "8.4.1"
+        }
     },
     "scripts": {
         "start": "php -S localhost:8000 -t public",
         "lint": "find bootstrap.php config.php bin public src views -name '*.php' -print0 | xargs -0 -n1 php -l",
+        "format": "php-cs-fixer fix",
+        "format:check": "php-cs-fixer fix --dry-run --diff",
         "db:setup": "php bin/setup-database.php",
-        "db:fresh": "php bin/setup-database.php --fresh"
+        "db:fresh": "php bin/setup-database.php --fresh",
+        "check": [
+            "@lint",
+            "@format:check"
+        ]
     },
     "scripts-descriptions": {
         "start": "Start the local development server on http://localhost:8000",
         "lint": "Check every PHP file for syntax errors",
+        "format": "Format every PHP file the way .php-cs-fixer.php says",
+        "format:check": "Show what format would change, without changing it",
         "db:setup": "Create the database, its tables and the demo content",
-        "db:fresh": "Drop the database and build it again, for a clean test session"
+        "db:fresh": "Drop the database and build it again, for a clean test session",
+        "check": "Everything that has to be green before you push"
     }
 }

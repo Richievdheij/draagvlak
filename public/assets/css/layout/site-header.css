@@ -1,0 +1,56 @@
+/*
+ * The bar on top of every screen: the wordmark and the menu button.
+ *
+ * Belongs to views/layout/site-header.php.
+ */
+
+.site-header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 10;
+    background-color: var(--color-background);
+    border-block-end: var(--border-hairline);
+}
+
+.site-header__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--header-height);
+    padding-block: var(--space-2);
+}
+
+/* The name of the system, in the colour of the system. */
+.brand {
+    margin-inline-end: auto;
+    color: var(--color-accent);
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight);
+    text-decoration: none;
+}
+
+.brand:hover {
+    color: var(--color-accent-hover);
+}
+
+/* Reads as the score itself, right next to the name of the app. */
+.brand-score {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-3);
+    background-color: var(--color-accent-soft);
+    color: var(--color-accent);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-xs);
+    text-decoration: none;
+}
+
+.brand-score__value {
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+}

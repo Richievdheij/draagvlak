@@ -1,0 +1,51 @@
+/*
+ * The small print at the bottom of every screen, and the theme switch.
+ *
+ * Belongs to views/layout/site-footer.php.
+ */
+
+.site-footer {
+    padding-block: var(--space-5) var(--space-6);
+    color: var(--color-text-faint);
+    font-size: var(--text-xs);
+    line-height: 1.6;
+}
+
+.site-footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.site-footer a {
+    color: var(--color-text-faint);
+    text-decoration: underline;
+}
+
+.site-footer a:hover {
+    color: var(--color-accent);
+}
+
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-3);
+    color: var(--color-text-faint);
+    border: var(--border-hairline);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-2xs);
+    cursor: pointer;
+}
+
+.theme-toggle:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+}
+
+.theme-toggle svg {
+    width: 0.875rem;
+    height: 0.875rem;
+}

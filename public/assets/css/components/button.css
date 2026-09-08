@@ -63,6 +63,13 @@
     width: 100%;
 }
 
+/* Narrower, not shorter: a button that sits next to something else still has
+   to be 44px tall or a thumb misses it. */
+.btn--small {
+    padding-inline: var(--space-3);
+    font-size: var(--text-xs);
+}
+
 .btn[disabled],
 .btn[aria-disabled='true'] {
     opacity: 0.5;

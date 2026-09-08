@@ -1,0 +1,64 @@
+/*
+ * One person on the contacts list.
+ *
+ * Belongs to views/features/contacts/contact-row.php. The card with a message in it is
+ * message-card; this is the plain row you get once nobody is waiting.
+ */
+
+.contact-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background-color: var(--color-surface);
+    border: var(--border-hairline);
+    border-radius: var(--radius-md);
+}
+
+/* Somebody who has dropped under the threshold goes quiet rather than red. */
+.contact-row--quiet {
+    background-color: var(--color-surface-muted);
+    border-color: var(--color-border-muted);
+}
+
+.contact-row__who {
+    display: flex;
+    flex: 1 1 8rem;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+}
+
+.contact-row__name {
+    font-weight: var(--weight-semibold);
+    overflow-wrap: anywhere;
+}
+
+.contact-row__meta {
+    color: var(--color-text-faint);
+    font-size: var(--text-xs);
+}
+
+.contact-row__score {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: var(--weight-semibold);
+    line-height: var(--leading-tight);
+}
+
+.contact-row__score small {
+    color: var(--color-text-faint);
+    font-family: var(--font-body);
+    font-size: var(--text-2xs);
+    font-weight: var(--weight-regular);
+}
+
+/* The way out sits on its own line under the person, never next to their
+   number. Removing somebody is not a thing this app offers you. */
+.contact-row__remove {
+    flex-basis: 100%;
+}

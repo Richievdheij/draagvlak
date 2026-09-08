@@ -16,21 +16,28 @@
     font-weight: var(--weight-medium);
 }
 
-/* Stays at 1rem: anything smaller makes iOS zoom in when the field is tapped. */
+/*
+ * The text stays at 1rem: anything smaller makes iOS zoom in when the field is
+ * tapped. The height comes from --field-height instead of from the padding, so
+ * a field sits at the 44px an accessible touch target needs and not a line of
+ * padding above it.
+ */
 .field__input {
+    --field-height: 2.75rem;
+
+    /* The ring sits on the edge here rather than 2px around it, so focusing a
+       field reads as the field lighting up and not as a second border. */
+    --focus-offset: 0;
+
     width: 100%;
-    min-height: 2.75rem;
-    padding: var(--space-3) var(--space-4);
+    min-height: var(--field-height);
+    padding: var(--space-2) var(--space-3);
     background-color: var(--color-surface);
     color: var(--color-text);
     border: var(--border-hairline);
     border-radius: var(--radius-sm);
     font-size: var(--text-md);
-    transition: border-color var(--transition-fast);
-}
-
-.field__input:hover {
-    border-color: var(--color-border-muted);
+    line-height: var(--leading-snug);
 }
 
 .field__input[aria-invalid='true'] {
@@ -39,6 +46,12 @@
 
 .field__input::placeholder {
     color: var(--color-text-faint);
+}
+
+/* A code is read character by character, so it gets the spacing to match. */
+.field__input--code {
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
 }
 
 .field__hint {

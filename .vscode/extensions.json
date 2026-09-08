@@ -1,0 +1,13 @@
+// What this repository expects you to have installed. VS Code offers these once you open
+// the project; without them, formatting on save does nothing and the settings in
+// settings.json are ignored.
+{
+    "recommendations": [
+        "bmewburn.vscode-intelephense-client",
+        "junstyle.php-cs-fixer",
+        "esbenp.prettier-vscode",
+        "editorconfig.editorconfig",
+        "dbaeumer.vscode-eslint"
+    ],
+    "unwantedRecommendations": ["felixfbecker.php-intellisense"]
+}

@@ -1,0 +1,8 @@
+# Not ours to format.
+/vendor/
+/node_modules/
+/public/assets/fonts/
+
+# Kept as it is: the block in here is pasted into a chat window, and rewrapping
+# it changes what people copy.
+/docs/ai/chatgpt-en-gemini-paste.md
