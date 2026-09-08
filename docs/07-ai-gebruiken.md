@@ -16,6 +16,7 @@ tool-specifieke dingen toe. Dit is wat elk model echt uit de repo oppikt:
 | Gemini CLI                              | `GEMINI.md`                                                     |
 | Cursor, Codex en andere agents          | `AGENTS.md`                                                     |
 | ChatGPT, Gemini of Claude in de browser | niets uit de repo                                               |
+| De commitknop in VS Code                | `.github/commit-instructions.md`                                |
 
 Werk je met een van de eerste vier, dan hoef je niets te doen. Klopt een antwoord
 duidelijk niet met onze afspraken, dan is de kans groot dat je in een tool zit die
@@ -37,6 +38,16 @@ als deze `docs/`, maar korter en gericht op het doen:
 Je kunt ze aanroepen met `/draagvlak-screen` en zo verder. Verandert er iets aan de
 werkwijze, pas dan `AGENTS.md` én de skill aan; een regel die twee keer ergens staat gaat
 uit elkaar lopen.
+
+## Je commitbericht laten schrijven
+
+Boven het commitvak in Source Control staat een knop met een sterretje die het bericht
+voor je schrijft. Die is gekoppeld aan `.github/commit-instructions.md`, dus hij levert
+`type(scope): korte titel` met een body eronder in plaats van één vlakke regel.
+
+Gebruiken hoeft niet en er verandert niets als je zelf typt. Lees wel altijd na wat
+eruit komt: het model ziet de diff, niet waarom je iets deed, dus de zin die zegt waarom
+moet meestal van jou komen.
 
 ## In de browser
 

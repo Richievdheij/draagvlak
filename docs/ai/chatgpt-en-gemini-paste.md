@@ -23,7 +23,7 @@ STACK
 PHP 8.4 or newer, object-oriented, no framework and no router. MySQL through PDO, no ORM
 and no query builder. Vanilla ES modules, no bundler, no JS libraries. CSS custom
 properties, no preprocessor. Per-visit state in the PHP session, everything else in the
-database. The only dependency is php-cs-fixer, and it is require-dev. Never introduce a
+database. The only dependency is Laravel Pint, and it is require-dev. Never introduce a
 framework, build step, CSS library or ORM.
 
 LAYOUT - feature-first. Everything about one subject sits in one folder, and src/,
@@ -134,7 +134,7 @@ repeats the next line, never history, a name or a date. Inline comments only whe
 correct code looks wrong, which here is almost always the scenario itself.
 
 FORMATTING
-Do not hand-format. .php-cs-fixer.php owns PHP and .prettierrc owns CSS, JS and Markdown;
+Do not hand-format. pint.json owns PHP and .prettierrc owns CSS, JS and Markdown;
 both run on save. Four spaces, LF, PSR-12, sorted imports, trailing commas, a blank line
 before a return and before a block. What is left to the author: docblock alignment, and
 where a blank line goes inside a method to separate one thought from the next.

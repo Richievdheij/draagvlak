@@ -104,7 +104,12 @@ an input a hover state.
 
 ## Formatting
 
-Do not hand-format. `.php-cs-fixer.php` and `.prettierrc` own it, and both run on save.
+Do not hand-format. `pint.json` and `.prettierrc` own it, and both run on save.
+
+## Commits
+
+The commit message button is given [commit-instructions.md](commit-instructions.md).
+That file holds the shape; do not repeat it here.
 
 ## Do not put team things on a screen
 

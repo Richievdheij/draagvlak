@@ -37,14 +37,24 @@ branches.
 
 Engels, tegenwoordige tijd, zeg wat de wijziging doet en niet wat jij hebt gedaan.
 
+De vorm is `type(scope): korte titel`, dan een lege regel, dan een body die vertelt wat
+er verandert en waarom. Welke types en scopes er zijn, en wat er nooit in een
+commitbericht hoort, staat in
+[.github/commit-instructions.md](.github/commit-instructions.md).
+
 ```
-Add contacts screen with response time sorting
-Fix menu staying open after resizing to desktop
-Move response time formatting out of the partial
+feat(contacts): add the contacts screen with a response window
+fix(home): keep the menu closed after resizing to desktop
+refactor(messages): move response time formatting out of the partial
 ```
 
 Dus niet "changes", "update", "wip" of "aanpassing gedaan". Een commit die je over drie
 weken niet meer kunt plaatsen is een verloren commit.
+
+Verplicht is die vorm niet: typ je er zelf een zonder prefix, dan gaat er niets stuk. Wel
+schrijft de knop met het sterretje boven het commitvak in Source Control hem zo, met een
+body erbij, omdat dat bestand eraan gekoppeld staat. Eén regel is over drie maanden een
+stuk minder waard dan drie zinnen die zeggen waarom.
 
 Commit vaak en klein. Eén commit die zeven bestanden en drie onderwerpen raakt is niet
 te reviewen en niet terug te draaien.
@@ -67,8 +77,8 @@ bent.
 ## Voordat je pusht
 
 ```bash
-composer check    # syntax en opmaak
-npm run lint      # de JavaScript, als je die hebt aangeraakt
+composer check    # de PHP: syntax en opmaak
+npm run check     # de CSS, JavaScript en Markdown, als je die hebt aangeraakt
 ```
 
 En open het scherm dat je hebt aangepast echt in de browser, ook in apparaatweergave op
@@ -116,7 +126,7 @@ De getallen in `src/Features/Score/ScoreRules.php`. Die zijn het scenario, geen
 technische keuze: verander je ze in je eentje, dan zijn de testsessies onderling niet meer
 te vergelijken.
 
-De regels in `.php-cs-fixer.php`, `.prettierrc` of `.vscode/`. Die bepalen hoe elk
+De regels in `pint.json`, `.prettierrc` of `.vscode/`. Die bepalen hoe elk
 bestand van iedereen eruitziet, dus een wijziging daar raakt de hele repo in één keer.
 
 Een kleur of een lettertype vervangen in `base/tokens.css`. Eén token bijstellen is

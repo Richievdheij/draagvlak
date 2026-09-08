@@ -185,7 +185,7 @@ interne hulpfuncties krijgen één regel zonder tags.
 ## Opmaak doet de computer
 
 ```bash
-composer format     # PHP, via .php-cs-fixer.php
+composer format     # PHP, via pint.json
 npm run format      # CSS, JS en Markdown, via .prettierrc
 composer check      # syntax en opmaak, voordat je pusht
 ```
@@ -275,7 +275,7 @@ mensen die er zomaar in staan. Dat hoort in de README.
 
 ```bash
 composer check
-npm run lint
+npm run check
 ```
 
 En open het scherm dat je hebt aangepast echt even in de browser, ook op telefoonbreedte.

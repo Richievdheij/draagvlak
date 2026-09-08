@@ -208,6 +208,7 @@ Moet een formulier terugkomen met wat er al ingevuld stond, gebruik dan
 
 ```bash
 composer check
+npm run check
 composer start
 ```
 

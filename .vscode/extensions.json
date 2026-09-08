@@ -4,10 +4,10 @@
 {
     "recommendations": [
         "bmewburn.vscode-intelephense-client",
-        "junstyle.php-cs-fixer",
+        "open-southeners.laravel-pint",
         "esbenp.prettier-vscode",
         "editorconfig.editorconfig",
         "dbaeumer.vscode-eslint"
     ],
-    "unwantedRecommendations": ["felixfbecker.php-intellisense"]
+    "unwantedRecommendations": ["felixfbecker.php-intellisense", "junstyle.php-cs-fixer"]
 }

@@ -84,11 +84,12 @@ Herd, dan blijft dit project op 8.4 draaien.
 | ------------------- | ---------------------------------------------------------- |
 | `composer start`    | Start de server op `http://localhost:8000`                 |
 | `composer check`    | Syntax en opmaak. Dit moet groen zijn voordat je pusht.    |
-| `composer format`   | Maakt elk PHP-bestand op volgens `.php-cs-fixer.php`       |
+| `composer format`   | Maakt elk PHP-bestand op volgens `pint.json`               |
 | `composer db:setup` | Maakt de database, de tabellen en de demo-inhoud           |
 | `composer db:fresh` | Gooit de database weg en bouwt hem opnieuw op              |
 | `npm install`       | Alleen als je de opmaaktools voor CSS en JS wilt gebruiken |
-| `npm run lint`      | Controleert de JavaScript                                  |
+| `npm run check`     | Controleert de JavaScript en de opmaak van CSS en Markdown |
+| `npm run lint`      | Controleert alleen de JavaScript                           |
 | `npm run format`    | Maakt CSS, JS en Markdown op volgens `.prettierrc`         |
 
 Je hoeft nooit `composer dump-autoload` te draaien. Een nieuwe klasse wordt vanzelf

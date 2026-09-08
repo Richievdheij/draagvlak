@@ -17,6 +17,6 @@
 </IfModule>
 
 # Without mod_rewrite, at least refuse the files that must never be readable.
-<FilesMatch "^(composer\.(json|lock)|package(-lock)?\.json|config(\.local)?\.php|bootstrap\.php|\.php-cs-fixer\.php)$">
+<FilesMatch "^(composer\.(json|lock)|package(-lock)?\.json|pint\.json|config(\.local)?\.php|bootstrap\.php)$">
     Require all denied
 </FilesMatch>

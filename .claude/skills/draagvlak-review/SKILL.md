@@ -11,7 +11,7 @@ Work through this in order. Every line is here because it went wrong before.
 
 ```bash
 composer check    # every PHP file parses, and the formatting is right
-npm run lint      # the JavaScript, if you touched any
+npm run check     # the JavaScript, and the layout of CSS and Markdown
 composer start
 ```
 

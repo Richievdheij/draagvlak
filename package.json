@@ -11,7 +11,8 @@
   "scripts": {
     "format": "prettier --write \"public/assets/**/*.{js,css}\" \"**/*.md\"",
     "format:check": "prettier --check \"public/assets/**/*.{js,css}\" \"**/*.md\"",
-    "lint": "eslint public/assets/js"
+    "lint": "eslint public/assets/js",
+    "check": "npm run lint && npm run format:check"
   },
   "devDependencies": {
     "eslint": "^9.0.0",

@@ -12,13 +12,10 @@
 !.vscode/settings.json
 !.vscode/extensions.json
 
-# Local overrides, caches and logs. Your database password lives in
-# config.local.php and stays on your own machine.
+# Local overrides and logs. Your database password lives in config.local.php
+# and stays on your own machine. Pint keeps its cache in the system temp folder,
+# so there is nothing to ignore for the formatter.
 config.local.php
 .env
 .env.local
 *.log
-.php-cs-fixer.cache
-
-# Persoonlijke skills van je eigen installatie horen niet bij dit project.
-.claude/skills/brainstorm/

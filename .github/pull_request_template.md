@@ -12,7 +12,8 @@ http://draagvlak.test/
 
 ## Nagelopen
 
-- [ ] `composer check` is schoon, en `npm run lint` als je JavaScript hebt aangeraakt
+- [ ] `composer check` is schoon, en `npm run check` als je CSS, JavaScript of Markdown
+      hebt aangeraakt
 - [ ] Scherm geopend in de browser, ook in apparaatweergave op 390 pixels breed
 - [ ] Alles van één onderwerp staat in één feature: de vier bestanden van een scherm
       heten naar elkaar, en wat twee features gebruiken staat in `components/`

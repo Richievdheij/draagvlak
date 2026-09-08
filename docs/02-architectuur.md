@@ -58,7 +58,7 @@ draagvlak/
 ├── docs/                    Deze documentatie
 ├── bootstrap.php            Autoloader, daarna App::boot()
 ├── config.php               Instellingen, per machine te overschrijven
-├── .php-cs-fixer.php        Hoe PHP wordt opgemaakt
+├── pint.json                Hoe PHP wordt opgemaakt
 └── .prettierrc              Hoe CSS, JS en Markdown worden opgemaakt
 ```
 

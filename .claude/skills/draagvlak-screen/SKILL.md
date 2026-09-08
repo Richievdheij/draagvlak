@@ -198,6 +198,7 @@ value is the Dutch label.
 
 ```bash
 composer check
+npm run check
 composer start
 ```
 

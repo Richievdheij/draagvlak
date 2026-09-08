@@ -32,7 +32,8 @@ Do not spawn subagents or workflows for work in this repository. Nothing here is
 enough or independent enough to be worth the overhead. If a session is started in a mode
 that fans work out by default, say so once and work directly.
 
-Do not add verification passes of your own output. Run `composer check`, open the screen,
+Do not add verification passes of your own output. Run `composer check`, plus
+`npm run check` when you touched CSS, JavaScript or Markdown. Then open the screen,
 report what you saw, stop.
 
 ## Stop conditions
@@ -49,7 +50,7 @@ Ask before you do any of these:
   session is running
 - changing `data/scenario.json` while a test session is running
 - replacing a palette or a typeface in `public/assets/css/base/tokens.css`
-- editing `.github/`, `.vscode/`, `.php-cs-fixer.php` or `.prettierrc`
+- editing `.github/`, `.vscode/`, `pint.json` or `.prettierrc`
 
 ## Running it
 

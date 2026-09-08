@@ -13,24 +13,29 @@
     "files.trimTrailingWhitespace": true,
     "files.trimFinalNewlines": true,
 
-    // PHP is formatted by php-cs-fixer, through .php-cs-fixer.php, so the same rules
-    // apply on save and in "composer format". The extension does that itself, which is
-    // why VS Code's own formatter stays out of the way here.
+    // PHP is formatted by Pint, through pint.json, so the same rules apply on save and
+    // in "composer format". The extension finds vendor/bin/pint and pint.json by itself;
+    // the fallback to a globally installed Pint is off, because that one could format
+    // your files by different rules than everyone else's.
     "[php]": {
-        "editor.formatOnSave": false
+        "editor.defaultFormatter": "open-southeners.laravel-pint"
     },
-    "php-cs-fixer.executablePath": "${workspaceFolder}/vendor/bin/php-cs-fixer",
-    "php-cs-fixer.config": "${workspaceFolder}/.php-cs-fixer.php",
-    "php-cs-fixer.onsave": true,
-    "php-cs-fixer.allowRisky": true,
-    "php-cs-fixer.formatHtml": false,
+    "laravel-pint.fallbackToGlobalBin": false,
 
-    // Everything else goes through Prettier, with .prettierrc.
+    // The HTML of this app is written in views/*.php, and VS Code leaves Emmet off in
+    // a PHP file until you say this.
+    "emmet.includeLanguages": { "php": "html" },
+
+    // Everything else goes through Prettier, with .prettierrc. Markdown keeps its
+    // trailing spaces: two of them are a line break.
     "[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
     "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
     "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
     "[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
-    "[markdown]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    "[markdown]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "files.trimTrailingWhitespace": false
+    },
 
     // The helper types come from docblocks, so keep the checks on.
     "intelephense.environment.phpVersion": "8.4.0",
@@ -39,9 +44,13 @@
     "intelephense.diagnostics.undefinedProperties": true,
     "intelephense.format.enable": false,
 
-    "files.associations": {
-        ".php-cs-fixer.php": "php"
-    },
+    // The button above the commit box in Source Control writes the message itself. This
+    // hands it the house style, so what comes out has a type, a scope and a body instead
+    // of one flat line. Pressing the button stays optional.
+    "github.copilot.chat.commitMessageGeneration.instructions": [
+        { "file": ".github/commit-instructions.md" }
+    ],
+
     "search.exclude": {
         "**/vendor": true,
         "**/node_modules": true

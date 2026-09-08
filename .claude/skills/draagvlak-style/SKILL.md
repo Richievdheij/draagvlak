@@ -144,7 +144,7 @@ export function init(button) {
 ## Formatting is not your job
 
 ```bash
-composer format      # PHP, through .php-cs-fixer.php
+composer format      # PHP, through pint.json
 npm run format       # CSS, JavaScript and Markdown, through .prettierrc
 composer check       # syntax and formatting, before you push
 ```

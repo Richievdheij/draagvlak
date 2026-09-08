@@ -39,9 +39,10 @@ Classes are found by a PSR-4 autoloader written out in `bootstrap.php`, so a che
 without `composer install` still works. `composer.json` declares the same mapping for
 editors. There is never a list of files to maintain and never a `composer dump-autoload`.
 
-The one dependency is `friendsofphp/php-cs-fixer`, and it is `require-dev`: the app does
-not run on it. Do not add a framework, a build step, a CSS library, a JS library or an
-ORM. If a task seems to need one, say so in one sentence and solve it without.
+The one dependency is `laravel/pint`, and it is `require-dev`: the app does not run on
+it. Pint ships as one compiled binary, so `vendor/` holds a single package. Do not add a
+framework, a build step, a CSS library, a JS library or an ORM. If a task seems to need
+one, say so in one sentence and solve it without.
 
 PHP is 8.4 and `composer.json` pins `^8.4`, so 8.5 works and 9.0 cannot slip in. Node 24
 is only needed for the formatters. Nothing depends on where the project sits on disk or
@@ -379,9 +380,13 @@ TypeScript; internal helpers get a single line without tags.
 
 ## Formatting
 
-Do not hand-format. `composer format` runs PHP-CS-Fixer with `.php-cs-fixer.php`, and
-`npm run format` runs Prettier with `.prettierrc` for CSS, JavaScript and Markdown. Both
-run on save in VS Code through `.vscode/settings.json`.
+Do not hand-format. `composer format` runs Pint with `pint.json`, and `npm run format`
+runs Prettier with `.prettierrc` for CSS, JavaScript and Markdown. Both run on save in VS
+Code through `.vscode/settings.json`. Pint reads every `.php` file in the project, so a
+new folder needs no registration either.
+
+`pint.json` is Pint's `psr12` preset plus the rules a team argues about otherwise. It is
+JSON, so it cannot explain itself; the sentence under it has to stay true instead.
 
 What they enforce: four spaces, LF, a final newline, no trailing whitespace, PSR-12,
 sorted imports with none unused, a blank line before `return` and before a block, one
@@ -392,7 +397,8 @@ What they leave to you: how you align a docblock, and where you put a blank line
 method to separate one thought from the next. Use them. A method that reads as three
 short paragraphs is easier than one wall of statements.
 
-Before you push, `composer check` runs the syntax check and the format check together.
+Before you push, `composer check` runs the syntax check and the format check for PHP, and
+`npm run check` does the same for CSS, JavaScript and Markdown.
 
 ## Editor support
 
@@ -477,6 +483,7 @@ them true: a rule that is written down twice will drift.
 | Gemini CLI                             | `GEMINI.md`                                                       |
 | Cursor, Codex and other agents         | `AGENTS.md`                                                       |
 | ChatGPT, Gemini or Claude in a browser | nothing; paste `docs/ai/chatgpt-en-gemini-paste.md`               |
+| The commit message button in VS Code   | `.github/commit-instructions.md`                                  |
 
 ## Git
 
@@ -492,6 +499,11 @@ git switch -c feature/contacts-screen
 Branch names are English, with a prefix: `feature/`, `fix/` or `docs/`. One subject per
 branch. Open the pull request against `develop`, never against `main`.
 
+A commit message is `type(scope): short title`, a blank line, then a body that says what
+changed and why. The types, the scopes and what never belongs in a message are in
+`.github/commit-instructions.md`, which is also what the commit message button in VS Code
+is handed. Nothing enforces it; a message that ignores it is not rejected.
+
 ## Working rules
 
 - Implement the change. Do not hand back a description of a change that was asked for.
@@ -499,7 +511,8 @@ branch. Open the pull request against `develop`, never against `main`.
 - Make the smallest change that does the job. Do not reformat, rename or restructure
   files you were not asked about.
 - Never invent a path, a class, a method, a CSS class or a column. Grep for it first.
-- Run `composer check` after touching PHP. Say plainly what you could not run.
+- Run `composer check` after touching PHP, and `npm run check` after touching CSS,
+  JavaScript or Markdown. Say plainly what you could not run.
 - When something you were asked to do conflicts with this file, do it the way this file
   says and mention the conflict once.
 

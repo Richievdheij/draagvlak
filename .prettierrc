@@ -19,7 +19,13 @@
             }
         },
         {
-            "files": "*.{json,yml,yaml}",
+            "files": "*.json",
+            "options": {
+                "tabWidth": 4
+            }
+        },
+        {
+            "files": ["package.json", "package-lock.json", "*.{yml,yaml}"],
             "options": {
                 "tabWidth": 2
             }

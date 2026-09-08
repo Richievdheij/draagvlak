@@ -5,12 +5,14 @@
     "license": "proprietary",
     "require": {
         "php": "^8.4",
+        "ext-filter": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
-        "ext-pdo_mysql": "*"
+        "ext-pdo_mysql": "*",
+        "ext-session": "*"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.64"
+        "laravel/pint": "^1.31"
     },
     "autoload": {
         "psr-4": {
@@ -27,8 +29,8 @@
     "scripts": {
         "start": "php -S localhost:8000 -t public",
         "lint": "find bootstrap.php config.php bin public src views -name '*.php' -print0 | xargs -0 -n1 php -l",
-        "format": "php-cs-fixer fix",
-        "format:check": "php-cs-fixer fix --dry-run --diff",
+        "format": "pint",
+        "format:check": "pint --test",
         "db:setup": "php bin/setup-database.php",
         "db:fresh": "php bin/setup-database.php --fresh",
         "check": [
@@ -39,7 +41,7 @@
     "scripts-descriptions": {
         "start": "Start the local development server on http://localhost:8000",
         "lint": "Check every PHP file for syntax errors",
-        "format": "Format every PHP file the way .php-cs-fixer.php says",
+        "format": "Format every PHP file the way pint.json says",
         "format:check": "Show what format would change, without changing it",
         "db:setup": "Create the database, its tables and the demo content",
         "db:fresh": "Drop the database and build it again, for a clean test session",
