@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Front-end tooling for the Draagvlak 2038 prototype. There is no bundler: the browser loads the ES modules directly.",
+  "license": "UNLICENSED",
   "type": "module",
   "engines": {
     "node": ">=24"

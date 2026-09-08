@@ -2,7 +2,7 @@
     "name": "richievdheij/draagvlak",
     "description": "Draagvlak 2038 - speculative design prototype for the CMGT future scenario about social scoring.",
     "type": "project",
-    "license": "MIT",
+    "license": "proprietary",
     "require": {
         "php": "^8.4",
         "ext-mbstring": "*",

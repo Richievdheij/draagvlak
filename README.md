@@ -286,3 +286,17 @@ Verder:
 En de vraag die daaronder zit: dit is een onderzoeksprototype. Het is gebouwd om in een
 sessie op een paar mensen getest te worden, niet om open op het internet te staan waar
 iedereen zich kan inschrijven. Wil je het publiek zetten, overleg dat eerst met het team.
+
+## Rechten en gebruik
+
+Deze repository staat publiek zodat je hem kunt lezen, nakijken en beoordelen. Dat is
+iets anders dan open source: er zit geen MIT- of andere open licentie op, en die komt er
+ook niet.
+
+Kijken mag. Overnemen niet. Kopiëren, aanpassen, publiceren of hergebruiken van welk deel
+dan ook kan alleen met schriftelijke toestemming van Bram van Dijke en Richie van der
+Heij. Inleveren als je eigen schoolwerk is plagiaat. De volledige tekst staat in
+[LICENSE](LICENSE).
+
+Meeschrijven doet alleen wie als collaborator is toegevoegd. De rest van GitHub kan de
+repository lezen en forken, want dat hoort bij publiek staan en valt niet uit te zetten.
